@@ -78,12 +78,12 @@ export function NewsFeed({ items, portfolioSymbols = ["ZAMBEEF", "SCBL", "ATEL"]
                       </span>
                     </div>
                   </div>
-                  <p className="text-sm font-medium mb-1">{item.headline}</p>
-                  <p className="text-xs text-muted-foreground leading-relaxed">
+                  <p className="text-base font-medium mb-1">{item.headline}</p>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
                     {item.summary}
                   </p>
                   {relevant && (
-                    <p className="text-xs text-brand-green mt-1.5 font-medium">
+                    <p className="text-sm text-brand-green mt-2 font-medium">
                       This may affect your portfolio
                     </p>
                   )}

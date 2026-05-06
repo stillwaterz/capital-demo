@@ -34,7 +34,7 @@ export function PriceChart({ prices30d, changePercent }: Props) {
           domain={[minVal - padding, maxVal + padding]}
           tickFormatter={(v: number) => `${v.toFixed(2)}`}
           width={52}
-          tick={{ fontSize: 11 }}
+          tick={{ fontSize: 13 }}
         />
         <Tooltip
           formatter={(value) =>

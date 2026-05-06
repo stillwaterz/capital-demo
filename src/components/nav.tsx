@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, LogOut } from "lucide-react";
+import { useUserStore } from "@/lib/store/user";
 
 const LINKS = [
   { href: "/", label: "Home" },
@@ -15,22 +16,32 @@ const LINKS = [
 
 export function Nav() {
   const pathname = usePathname();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
+  const { name, isLoggedIn, logout } = useUserStore();
 
   function isActive(href: string) {
     if (href === "/") return pathname === "/";
     return pathname.startsWith(href);
   }
 
+  function handleLogout() {
+    logout();
+    setOpen(false);
+    router.push("/login");
+  }
+
+  const initials = name ? name.slice(0, 1).toUpperCase() : "?";
+
   return (
     <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur">
       <div className="container mx-auto max-w-3xl px-4 h-14 flex items-center justify-between">
         <Link
           href="/"
-          className="font-semibold text-lg tracking-tight"
+          className="font-bold text-lg tracking-tight font-display"
           onClick={() => setOpen(false)}
         >
-          Capital
+          MarketLink
         </Link>
 
         {/* Desktop nav */}
@@ -48,6 +59,15 @@ export function Nav() {
               {label}
             </Link>
           ))}
+          {isLoggedIn && (
+            <button
+              onClick={handleLogout}
+              className="ml-2 flex items-center justify-center w-8 h-8 rounded-full bg-brand-green text-brand-cream text-sm font-bold hover:bg-brand-green-light transition-colors"
+              title={`${name || "Account"} - Sign out`}
+            >
+              {initials}
+            </button>
+          )}
         </nav>
 
         {/* Mobile menu button */}
@@ -68,7 +88,7 @@ export function Nav() {
               key={href}
               href={href}
               onClick={() => setOpen(false)}
-              className={`px-3 py-2 rounded-md text-sm transition-colors ${
+              className={`px-3 py-3 rounded-md text-base transition-colors ${
                 isActive(href)
                   ? "bg-primary text-primary-foreground"
                   : "text-muted-foreground hover:text-foreground hover:bg-muted"
@@ -77,6 +97,15 @@ export function Nav() {
               {label}
             </Link>
           ))}
+          {isLoggedIn && (
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-2 px-3 py-3 rounded-md text-base text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            >
+              <LogOut size={16} />
+              Sign out {name ? `(${name})` : ""}
+            </button>
+          )}
         </div>
       )}
     </header>
