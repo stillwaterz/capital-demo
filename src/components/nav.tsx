@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
-import { Menu, X, LogOut } from "lucide-react";
+import { Menu, X, LogOut, User } from "lucide-react";
 import { useUserStore } from "@/lib/store/user";
 
 const LINKS = [
@@ -60,13 +60,13 @@ export function Nav() {
             </Link>
           ))}
           {isLoggedIn && (
-            <button
-              onClick={handleLogout}
+            <Link
+              href="/profile"
               className="ml-2 flex items-center justify-center w-8 h-8 rounded-full bg-brand-green text-brand-cream text-sm font-bold hover:bg-brand-green-light transition-colors"
-              title={`${name || "Account"} - Sign out`}
+              title={`${name || "Account"} - Profile`}
             >
               {initials}
-            </button>
+            </Link>
           )}
         </nav>
 
@@ -98,13 +98,23 @@ export function Nav() {
             </Link>
           ))}
           {isLoggedIn && (
-            <button
-              onClick={handleLogout}
-              className="flex items-center gap-2 px-3 py-3 rounded-md text-base text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-            >
-              <LogOut size={16} />
-              Sign out {name ? `(${name})` : ""}
-            </button>
+            <>
+              <Link
+                href="/profile"
+                onClick={() => setOpen(false)}
+                className="flex items-center gap-2 px-3 py-3 rounded-md text-base text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+              >
+                <User size={16} />
+                Profile {name ? `(${name})` : ""}
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-2 px-3 py-3 rounded-md text-base text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+              >
+                <LogOut size={16} />
+                Sign out
+              </button>
+            </>
           )}
         </div>
       )}

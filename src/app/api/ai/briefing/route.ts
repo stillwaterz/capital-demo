@@ -1,5 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 
+const VERIFIED_COUNTERS = "ATEL, BATA, BATZ, CEC, CECA, CHIL, KLPT, MFIN, PUMA, REIZ, SCBL, ZAMBEEF, ZAMEFA, ZAFFICO, ZANACO, ZRE, DCZ";
+
 const BRIEFING_SYSTEM = `You are a sharp financial AI assistant for MarketLink, a Zambian investment app.
 
 Generate a very short personalised briefing. Exactly 3 sentences. No more.
@@ -10,7 +12,13 @@ Rules:
 - Sentence 2: one relevant news or macro event from the context.
 - Sentence 3: one brief practical observation. Not a command.
 - Plain paragraph. No headers. No bullets. No em dashes. No Oxford commas.
-- Year 9 reading level. Use only data you are given.`;
+- Year 9 reading level. Use only data you are given.
+
+No-fabrication rules (strictly enforced):
+- You answer only with information provided in the context. Do not invent facts.
+- Do not invent dividend amounts, executive names, financial figures, specific dates or earnings.
+- The only verified LuSE counters are: ${VERIFIED_COUNTERS}. Never reference a counter not on this list.
+- If you do not know something, say so or omit it. Do not guess.`;
 
 export async function POST(req: Request): Promise<Response> {
   const apiKey = process.env.ANTHROPIC_API_KEY;

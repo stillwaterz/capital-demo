@@ -1,11 +1,4 @@
 import Link from "next/link";
-import { ExternalLink } from "lucide-react";
-
-const SOCIAL = [
-  { label: "X / Twitter", href: "#" },
-  { label: "LinkedIn", href: "#" },
-  { label: "Instagram", href: "#" },
-];
 
 const LINKS = {
   Markets: [
@@ -15,16 +8,14 @@ const LINKS = {
     { label: "News", href: "/news" },
   ],
   Company: [
-    { label: "About", href: "#" },
-    { label: "Pranary", href: "#" },
-    { label: "Pangaea Securities", href: "#" },
-    { label: "Contact", href: "#" },
+    { label: "About", href: "/about" },
+    { label: "Contact", href: "/contact" },
+    { label: "Data Sources", href: "/data-sources" },
   ],
   Legal: [
-    { label: "Terms", href: "#" },
-    { label: "Privacy (DPA Zambia)", href: "#" },
-    { label: "Risk Disclosure", href: "#" },
-    { label: "Data Sources", href: "/data-sources" },
+    { label: "Terms of Use", href: "/terms" },
+    { label: "Privacy (DPA Zambia)", href: "/privacy" },
+    { label: "Risk Disclosure", href: "/risk" },
   ],
 };
 
@@ -36,19 +27,10 @@ export function SiteFooter() {
           {/* Brand column */}
           <div className="col-span-2 sm:col-span-1">
             <p className="text-xl font-bold font-display text-brand-cream mb-2">MarketLink</p>
-            <p className="text-sm text-brand-cream/50 mb-6">Where Zambia invests.</p>
-            <div className="flex gap-3">
-              {SOCIAL.map((s) => (
-                <a
-                  key={s.label}
-                  href={s.href}
-                  aria-label={s.label}
-                  className="w-9 h-9 rounded-lg border border-brand-cream/10 flex items-center justify-center text-brand-cream/40 hover:text-brand-cream hover:border-brand-cream/30 transition-colors"
-                >
-                  <ExternalLink size={13} />
-                </a>
-              ))}
-            </div>
+            <p className="text-sm text-brand-cream/50 mb-2">Where Zambia invests.</p>
+            <p className="text-sm text-brand-cream/40 leading-relaxed">
+              A Pranary product. Trades via Pangaea Securities Limited, SEC-licensed broker.
+            </p>
           </div>
 
           {Object.entries(LINKS).map(([section, items]) => (
@@ -69,8 +51,7 @@ export function SiteFooter() {
 
         <div className="border-t border-brand-cream/10 pt-6">
           <p className="text-xs text-brand-cream/30 text-center">
-            MarketLink is a Pranary product. Trades executed through Pangaea Securities Limited, a SEC-licensed broker.
-            {" "}&copy; 2026 Pranary Institute of Technology Ltd.
+            &copy; 2026 Pranary Institute of Technology Ltd. Lusaka, Zambia. Brokerage by Pangaea Securities Limited (SEC-licensed).
           </p>
         </div>
       </div>

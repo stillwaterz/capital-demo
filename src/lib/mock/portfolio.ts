@@ -24,27 +24,36 @@ export type Portfolio = {
 const zambeef = INSTRUMENTS.find((i) => i.symbol === "ZAMBEEF")!;
 const scbl = INSTRUMENTS.find((i) => i.symbol === "SCBL")!;
 const atel = INSTRUMENTS.find((i) => i.symbol === "ATEL")!;
+const cec = INSTRUMENTS.find((i) => i.symbol === "CEC")!;
 const tenor91 = TBILL_TENORS.find((t) => t.tenorDays === 91)!;
 const tenor182 = TBILL_TENORS.find((t) => t.tenorDays === 182)!;
 
+// Portfolio worth approx ZMW 1.5 million (equities + T-bills)
+// ZAMBEEF 10,000 @ 3.90 = ZMW 39,000
+// SCBL    2,000 @ 52.00 = ZMW 104,000
+// ATEL   30,000 @ 28.50 = ZMW 855,000
+// CEC     2,500 @ 145.00 = ZMW 362,500
+// T-bills ZMW 50,000 + ZMW 100,000
+// Total  ~ZMW 1,510,500
 export const DEMO_PORTFOLIO: Portfolio = {
   displayName: "Chanda M.",
   equities: [
-    { instrument: zambeef, sharesHeld: 5000, avgCostNgwee: 352 },
-    { instrument: scbl, sharesHeld: 200, avgCostNgwee: 4900 },
-    { instrument: atel, sharesHeld: 1000, avgCostNgwee: 2650 },
+    { instrument: zambeef, sharesHeld: 10_000, avgCostNgwee: 352 },
+    { instrument: scbl,    sharesHeld: 2_000,  avgCostNgwee: 4_900 },
+    { instrument: atel,    sharesHeld: 30_000, avgCostNgwee: 2_650 },
+    { instrument: cec,     sharesHeld: 2_500,  avgCostNgwee: 13_800 },
   ],
   tbills: [
     {
       tenor: tenor91,
-      faceValueNgwee: 500_000_00,
+      faceValueNgwee: 5_000_000,
       purchaseDate: "2026-02-14",
       maturityDate: "2026-05-16",
       autoRoll: true,
     },
     {
       tenor: tenor182,
-      faceValueNgwee: 1_000_000_00,
+      faceValueNgwee: 10_000_000,
       purchaseDate: "2026-01-10",
       maturityDate: "2026-07-11",
       autoRoll: false,

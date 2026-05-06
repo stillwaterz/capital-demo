@@ -21,7 +21,7 @@ export default function LoginPage() {
 
       <p className="mt-8 text-brand-cream/50 text-base">
         First time?{" "}
-        <Link href="/onboarding" className="text-brand-copper underline underline-offset-2">
+        <Link href="/welcome" className="text-brand-copper underline underline-offset-2">
           Create account
         </Link>
       </p>

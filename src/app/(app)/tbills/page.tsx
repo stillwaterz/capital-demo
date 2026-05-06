@@ -22,6 +22,25 @@ export default function TBillsPage() {
         </p>
       </section>
 
+      {/* Explainer */}
+      <Card className="border border-brand-ink/10 bg-brand-ink/5">
+        <CardContent className="py-5 px-5 space-y-2">
+          <p className="text-sm font-semibold text-brand-ink">What is a T-bill?</p>
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            A Treasury Bill is a short-term loan you make to the Zambian government. The government borrows for 91, 182 or 364 days and pays you back the face value at maturity. You buy below face value and earn the difference as interest.
+          </p>
+        </CardContent>
+      </Card>
+
+      <Card className="border border-brand-green/20 bg-brand-green/5">
+        <CardContent className="py-5 px-5 space-y-2">
+          <p className="text-sm font-semibold text-brand-green">How auto-roll works</p>
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            When auto-roll is on, your T-bill is automatically entered into the next auction at maturity. You stay invested without doing anything. Turn it off any time before your maturity date to receive cash instead.
+          </p>
+        </CardContent>
+      </Card>
+
       {DEMO_PORTFOLIO.tbills.length > 0 && (
         <section>
           <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-3">

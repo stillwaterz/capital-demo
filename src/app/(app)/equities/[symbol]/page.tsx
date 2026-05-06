@@ -23,15 +23,20 @@ export default async function EquityDetailPage({
   const relatedNews = newsBySymbol(symbol);
   const positive = instrument.changePercent >= 0;
 
-  const MOCK_RESEARCH = `${instrument.name} has shown consistent volume over the past 30 days. The counter trades on the Lusaka Securities Exchange and is part of the ${instrument.sector} sector. Recent price movement reflects broader sector trends and trading activity by institutional investors. Dividend payments have been in line with prior-year guidance. Investors should review the latest LuSE announcements for material updates before placing orders.`;
+  const MOCK_RESEARCH = `${instrument.description} This counter trades on the LuSE ${instrument.board === "alt-m" ? "Alternative Market (Alt-M)" : "main board"}. Prices shown are demo data. Always review the latest LuSE announcements before placing orders.`;
 
   return (
     <div className="space-y-6 pb-24">
       {/* Hero header */}
       <section>
-        <p className="text-sm text-muted-foreground uppercase tracking-wide">
-          {instrument.sector}
-        </p>
+        <div className="flex items-center gap-2 mb-1">
+          <p className="text-sm text-muted-foreground uppercase tracking-wide">
+            {instrument.sector}
+          </p>
+          {instrument.board === "alt-m" && (
+            <Badge variant="outline" className="text-xs">Alt-M</Badge>
+          )}
+        </div>
         <h1 className="text-3xl sm:text-4xl font-bold tracking-tight font-display mt-0.5">
           {instrument.symbol}
         </h1>
@@ -50,6 +55,9 @@ export default async function EquityDetailPage({
             {formatPercent(instrument.changePercent)} today
           </span>
         </div>
+        <span className="inline-block mt-2 text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
+          Demo price - live data via Pangaea Securities on launch
+        </span>
       </section>
 
       {/* Price chart */}

@@ -16,9 +16,9 @@ export const NEWS_ITEMS: NewsItem[] = [
     timestamp: "2026-05-06T07:30:00Z",
     source: "LuSE Announcement",
     category: "LuSE",
-    headline: "Zambeef Products reports 18% rise in half-year revenue",
+    headline: "Zambeef Products reports rise in half-year revenue",
     summary:
-      "Zambeef's half-year results show revenue of ZMW 1.2 billion, up 18% on the same period last year. Growth was driven by the retail division and export beef. Management held the interim dividend at 4 ngwee per share, citing working capital needs for the new Lusaka cold-chain facility due in Q3.",
+      "Demo data: Zambeef Products (ZAMBEEF) released half-year results showing revenue growth driven by the retail division and export beef. Dividend and revenue figures shown are illustrative only. Refer to official LuSE announcements for verified Zambeef financials.",
     relatedSymbols: ["ZAMBEEF"],
   },
   {
@@ -56,9 +56,9 @@ export const NEWS_ITEMS: NewsItem[] = [
     timestamp: "2026-05-05T09:00:00Z",
     source: "LuSE Announcement",
     category: "Company",
-    headline: "Stanchart Zambia declares ZMW 0.85 per share interim dividend",
+    headline: "Standard Chartered Bank Zambia declares interim dividend",
     summary:
-      "Standard Chartered Bank Zambia declared an interim dividend of ZMW 0.85 per share, payable to shareholders on record as of 20 May 2026. WHT at 15% will be deducted at source. The payment date is 5 June 2026. The dividend reflects a payout ratio of 42% of H1 earnings.",
+      "Standard Chartered Bank Zambia (SCBL) announced an interim dividend payable to shareholders on record as of 20 May 2026. WHT at 15% will be deducted at source per ZRA rules. The amount per share shown here is demo data - refer to the official LuSE announcement for verified figures.",
     relatedSymbols: ["SCBL"],
   },
   {

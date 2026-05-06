@@ -8,17 +8,32 @@ export type LiveNewsItem = {
 };
 
 const FINANCIAL_KEYWORDS = [
-  "luse",
-  "bank of zambia",
-  "boz",
-  "kwacha",
-  "copper",
-  "treasury",
-  "dividend",
-  "ipo",
-  "listed",
-  "exchange",
-  "monetary policy",
+  // Market infrastructure
+  "luse", "lusaka securities exchange", "stock exchange", "listed", "listing", "ipo", "direct listing",
+  // Regulators
+  "bank of zambia", "boz", "zra", "sec zambia", "securities and exchange commission",
+  "monetary policy", "mpr", "interest rate", "inflation",
+  // Instruments
+  "kwacha", "zmw", "treasury bill", "t-bill", "government bond", "dividend", "yield", "auction",
+  // Commodities relevant to Zambia
+  "copper", "cobalt",
+  // Verified LuSE counters
+  "airtel networks zambia", "atel",
+  "bata shoe", "bata zambia",
+  "british american tobacco zambia", "bat zambia", "batz",
+  "copperbelt energy", "cec",
+  "chilanga cement", "chil",
+  "klapton reinsurance", "klpt",
+  "madison financial", "mfin",
+  "puma energy zambia", "puma",
+  "real estate investments zambia", "reiz",
+  "standard chartered bank zambia", "stanchart zambia", "scbl",
+  "zambeef", "zambeef products",
+  "metal fabricators of zambia", "zamefa",
+  "zambia forestry", "zaffico",
+  "zambia national commercial bank", "zanaco",
+  "zambia reinsurance", "zre",
+  "dot com zambia", "dcz",
 ];
 
 function isFinanciallyRelevant(text: string): boolean {

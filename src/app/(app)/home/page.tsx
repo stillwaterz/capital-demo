@@ -173,7 +173,10 @@ export default async function DashboardPage() {
         </div>
       </section>
       {/* Footer */}
-      <div className="pt-2 pb-6 text-center">
+      <div className="pt-2 pb-6 text-center space-y-2">
+        <p className="text-xs text-muted-foreground">
+          Mock prices and historical series are demo data. Real prices via Pangaea Securities on launch. News and FX are real.
+        </p>
         <Link href="/data-sources" className="text-xs text-muted-foreground hover:text-foreground hover:underline">
           Data sources
         </Link>
