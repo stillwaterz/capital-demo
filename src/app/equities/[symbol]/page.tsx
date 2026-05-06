@@ -3,7 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { PriceChart } from "@/components/price-chart";
 import { EquityActions } from "@/components/equity-actions";
-import { getInstrument, formatZMW, INSTRUMENTS } from "@/lib/mock/instruments";
+import { getInstrument, INSTRUMENTS } from "@/lib/mock/instruments";
+import { formatZMW } from "@/lib/format";
 import { newsBySymbol } from "@/lib/mock/news";
 
 function formatDate(iso: string) {

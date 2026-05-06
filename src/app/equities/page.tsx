@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { INSTRUMENTS, formatZMW } from "@/lib/mock/instruments";
+import { INSTRUMENTS } from "@/lib/mock/instruments";
+import { formatZMW } from "@/lib/format";
 
 export default function EquitiesPage() {
   return (

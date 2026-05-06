@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { formatZMW } from "@/lib/format";
 
 type Side = "buy" | "sell";
 
@@ -35,7 +36,6 @@ export function TradeDialog({
   const [confirmed, setConfirmed] = useState(false);
 
   const sharesNum = Math.max(0, parseInt(shares) || 0);
-  const totalZMW = ((sharesNum * lastPriceNgwee) / 100).toFixed(2);
 
   function handleConfirm() {
     setConfirmed(true);
@@ -81,11 +81,11 @@ export function TradeDialog({
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">Price per share</span>
-              <span>ZMW {(lastPriceNgwee / 100).toFixed(2)}</span>
+              <span>{formatZMW(lastPriceNgwee)}</span>
             </div>
             <div className="flex justify-between text-sm font-medium border-t pt-2">
               <span>Estimated total</span>
-              <span>ZMW {totalZMW}</span>
+              <span>{formatZMW(sharesNum * lastPriceNgwee)}</span>
             </div>
             <p className="text-xs text-muted-foreground">
               Demo only - no real order is placed.

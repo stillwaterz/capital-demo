@@ -84,10 +84,6 @@ export const INSTRUMENTS: Instrument[] = [
   },
 ];
 
-export function formatZMW(ngwee: number): string {
-  return `ZMW ${(ngwee / 100).toFixed(2)}`;
-}
-
 export function getInstrument(symbol: string): Instrument | undefined {
   return INSTRUMENTS.find((i) => i.symbol === symbol);
 }

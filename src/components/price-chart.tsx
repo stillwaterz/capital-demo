@@ -8,6 +8,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import { formatZMWFloat } from "@/lib/format";
 
 type Props = {
   prices30d: number[];
@@ -38,7 +39,7 @@ export function PriceChart({ prices30d, changePercent }: Props) {
         <Tooltip
           formatter={(value) =>
             typeof value === "number"
-              ? [`ZMW ${value.toFixed(2)}`, "Price"]
+              ? [formatZMWFloat(value), "Price"]
               : [String(value), "Price"]
           }
           labelFormatter={(label) => `Day ${label}`}

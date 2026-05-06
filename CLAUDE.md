@@ -108,4 +108,6 @@ Never substitute a different model string without updating this file.
 
 ## Demo mode
 
+Demo deployed at https://capital-demo-five.vercel.app/
+
 The demo skips the monorepo and runs as a single Next.js app at the root. Mock data lives in `src/lib/mock/`. AI calls go directly from `app/api/ai/route.ts` to Anthropic. No Supabase, no auth, no broker adapter. Demo conventions in `TASKS.md` Track A.

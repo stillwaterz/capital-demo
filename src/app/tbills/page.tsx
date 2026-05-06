@@ -3,7 +3,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { AutorollToggle } from "@/components/autoroll-toggle";
 import { TBILL_TENORS, netYieldAfterWHT } from "@/lib/mock/tbills";
-import { DEMO_PORTFOLIO, formatZMW } from "@/lib/mock/portfolio";
+import { DEMO_PORTFOLIO } from "@/lib/mock/portfolio";
+import { formatZMW } from "@/lib/format";
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString("en-ZM", {

@@ -6,8 +6,8 @@ import {
   portfolioTotalNgwee,
   holdingCurrentValueNgwee,
   holdingPnLPercent,
-  formatZMW,
 } from "@/lib/mock/portfolio";
+import { formatZMW } from "@/lib/format";
 import { NEWS_ITEMS } from "@/lib/mock/news";
 import { TBILL_TENORS } from "@/lib/mock/tbills";
 

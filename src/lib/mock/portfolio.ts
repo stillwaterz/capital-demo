@@ -1,4 +1,4 @@
-import { type Instrument, INSTRUMENTS, formatZMW } from "./instruments";
+import { type Instrument, INSTRUMENTS } from "./instruments";
 import { type TBillTenor, TBILL_TENORS, netYieldAfterWHT } from "./tbills";
 
 export type EquityHolding = {
@@ -79,4 +79,4 @@ export function holdingPnLPercent(holding: EquityHolding): number {
     : ((holdingCurrentValueNgwee(holding) - cost) / cost) * 100;
 }
 
-export { formatZMW, netYieldAfterWHT };
+export { netYieldAfterWHT };
