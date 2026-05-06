@@ -1,13 +1,17 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useUserStore } from "@/lib/store/user";
 import { formatZMW } from "@/lib/format";
 
 type Props = { totalNgwee: number; fallbackName: string };
 
 export function PortfolioHeader({ totalNgwee, fallbackName }: Props) {
-  const { name } = useUserStore();
-  const displayName = name || fallbackName;
+  const [mounted, setMounted] = useState(false);
+  const name = useUserStore((s) => s.name);
+  useEffect(() => { setMounted(true); }, []);
+
+  const displayName = (mounted && name) ? name : fallbackName;
 
   return (
     <section>

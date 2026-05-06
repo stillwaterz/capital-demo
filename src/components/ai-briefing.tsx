@@ -7,6 +7,13 @@ import { DEMO_PORTFOLIO, portfolioTotalNgwee, holdingPnLPercent } from "@/lib/mo
 import { NEWS_ITEMS } from "@/lib/mock/news";
 import { formatZMW, formatPercent } from "@/lib/format";
 
+function getTimeOfDay(): string {
+  const h = new Date().getHours();
+  if (h < 12) return "morning";
+  if (h < 17) return "afternoon";
+  return "evening";
+}
+
 function buildPortfolioSummary(): string {
   const total = portfolioTotalNgwee(DEMO_PORTFOLIO);
   const equityLines = DEMO_PORTFOLIO.equities.map((h) => {
@@ -38,6 +45,7 @@ export function AiBriefing() {
 
     const payload = {
       userName: name || undefined,
+      timeOfDay: getTimeOfDay(),
       portfolioSummary: buildPortfolioSummary(),
       newsHeadlines: NEWS_ITEMS.slice(0, 5).map((n) => n.headline),
     };

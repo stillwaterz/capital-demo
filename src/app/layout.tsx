@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, Inter } from "next/font/google";
 import "./globals.css";
-import { Nav } from "@/components/nav";
-import { SessionNotification } from "@/components/session-notification";
 
 const jakarta = Plus_Jakarta_Sans({
   variable: "--font-display",
@@ -34,11 +32,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${jakarta.variable} ${inter.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col bg-background text-foreground font-body">
-        <Nav />
-        <SessionNotification />
-        <main className="flex-1 container mx-auto max-w-3xl px-4 py-6">
-          {children}
-        </main>
+        {children}
       </body>
     </html>
   );

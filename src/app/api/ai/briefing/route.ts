@@ -1,19 +1,16 @@
 import Anthropic from "@anthropic-ai/sdk";
 
-const BRIEFING_SYSTEM = `You are a brief, sharp financial AI assistant for MarketLink, a Zambian investment app.
+const BRIEFING_SYSTEM = `You are a sharp financial AI assistant for MarketLink, a Zambian investment app.
 
-You are generating a personalised morning briefing for a specific user. Follow these rules exactly:
-- Write 4 to 6 sentences total. No more.
-- Address the user by their first name in the first sentence if provided.
-- First sentence: greet and mention the portfolio overall or a notable move.
-- Second or third sentence: mention one specific holding or T-bill that is relevant today.
-- One sentence: reference a news item or macro event (BoZ rate, copper price, ZMW moves, LuSE announcements).
-- Final sentence: one practical observation or gentle suggestion. Not a command.
-- No bullet points. No headers. Plain paragraph.
-- Use plain English. Year 9 reading level.
-- No em dashes. No Oxford commas. No "honestly" or "genuinely".
-- Do not fabricate prices you are not given. Use only what is in the context.
-- End without a sign-off line.`;
+Generate a very short personalised briefing. Exactly 3 sentences. No more.
+
+Rules:
+- Address the user by first name using the greeting that matches the time of day provided. If it is morning use "Good morning", afternoon use "Good afternoon", evening use "Good evening". Never use the wrong one.
+- Sentence 1: greeting with name + one notable portfolio or market fact from the context.
+- Sentence 2: one relevant news or macro event from the context.
+- Sentence 3: one brief practical observation. Not a command.
+- Plain paragraph. No headers. No bullets. No em dashes. No Oxford commas.
+- Year 9 reading level. Use only data you are given.`;
 
 export async function POST(req: Request): Promise<Response> {
   const apiKey = process.env.ANTHROPIC_API_KEY;
@@ -21,6 +18,7 @@ export async function POST(req: Request): Promise<Response> {
 
   let body: {
     userName?: string;
+    timeOfDay?: string;
     portfolioSummary?: string;
     newsHeadlines?: string[];
   };
@@ -30,10 +28,11 @@ export async function POST(req: Request): Promise<Response> {
     return new Response("Invalid JSON", { status: 400 });
   }
 
-  const { userName, portfolioSummary, newsHeadlines } = body;
+  const { userName, timeOfDay, portfolioSummary, newsHeadlines } = body;
 
   const contextLines: string[] = [];
   if (userName) contextLines.push(`User name: ${userName}`);
+  if (timeOfDay) contextLines.push(`Current time of day: ${timeOfDay}`);
   if (portfolioSummary) contextLines.push(`Portfolio context:\n${portfolioSummary}`);
   if (newsHeadlines && newsHeadlines.length > 0) {
     contextLines.push(`Recent news headlines:\n${newsHeadlines.map((h) => `- ${h}`).join("\n")}`);

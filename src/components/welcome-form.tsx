@@ -16,7 +16,7 @@ export function WelcomeForm() {
     if (!trimmed) return;
     saveName(trimmed);
     completeOnboarding();
-    router.push("/");
+    router.push("/home");
   }
 
   return (

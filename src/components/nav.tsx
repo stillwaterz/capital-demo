@@ -7,7 +7,7 @@ import { Menu, X, LogOut } from "lucide-react";
 import { useUserStore } from "@/lib/store/user";
 
 const LINKS = [
-  { href: "/", label: "Home" },
+  { href: "/home", label: "Home" },
   { href: "/equities", label: "Equities" },
   { href: "/tbills", label: "T-Bills" },
   { href: "/news", label: "News" },
@@ -21,7 +21,7 @@ export function Nav() {
   const { name, isLoggedIn, logout } = useUserStore();
 
   function isActive(href: string) {
-    if (href === "/") return pathname === "/";
+    if (href === "/home") return pathname === "/home";
     return pathname.startsWith(href);
   }
 

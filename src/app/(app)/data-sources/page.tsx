@@ -38,7 +38,7 @@ export default function DataSourcesPage() {
   return (
     <div className="space-y-6">
       <section>
-        <Link href="/" className="text-sm text-brand-green hover:underline mb-4 inline-block">
+        <Link href="/home" className="text-sm text-brand-green hover:underline mb-4 inline-block">
           Back to home
         </Link>
         <h1 className="text-3xl font-bold font-display">Data sources</h1>

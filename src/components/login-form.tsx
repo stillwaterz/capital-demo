@@ -16,7 +16,7 @@ export function LoginForm() {
     if (phone.length < 9 || pin.length < 4) return;
     login(phone);
     if (name) {
-      router.push("/");
+      router.push("/home");
     } else {
       router.push("/welcome");
     }
