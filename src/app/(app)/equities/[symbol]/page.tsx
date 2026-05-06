@@ -127,7 +127,7 @@ export default async function EquityDetailPage({
       )}
 
       {/* Sticky buy/sell bottom bar */}
-      <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur border-t p-4 flex gap-3 sm:hidden">
+      <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur border-t px-4 py-5 flex gap-3 sm:hidden">
         <EquityActions
           symbol={instrument.symbol}
           name={instrument.name}

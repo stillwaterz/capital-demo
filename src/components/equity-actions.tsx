@@ -26,21 +26,21 @@ export function EquityActions({ symbol, name, lastPriceNgwee, mobile }: Props) {
       <div className={mobile ? "flex gap-3 w-full" : "flex gap-2"}>
         <Button
           onClick={() => setDialog("buy")}
-          size={mobile ? "default" : "sm"}
+          size={mobile ? "lg" : "default"}
           className={`bg-brand-green hover:bg-brand-green-light text-brand-cream active:scale-98 ${mobile ? "flex-1" : ""}`}
         >
           Buy
         </Button>
         <Button
           onClick={() => setDialog("sell")}
-          size={mobile ? "default" : "sm"}
+          size={mobile ? "lg" : "default"}
           variant="destructive"
           className={`active:scale-98 ${mobile ? "flex-1" : ""}`}
         >
           Sell
         </Button>
         {!mobile && (
-          <Button onClick={handleAskClick} size="sm" variant="outline" className="active:scale-98">
+          <Button onClick={handleAskClick} size="default" variant="outline" className="active:scale-98">
             Why did it move?
           </Button>
         )}
