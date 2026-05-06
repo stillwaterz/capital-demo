@@ -1,22 +1,13 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { AutorollToggle } from "@/components/autoroll-toggle";
 import { TBILL_TENORS, netYieldAfterWHT } from "@/lib/mock/tbills";
 import { DEMO_PORTFOLIO } from "@/lib/mock/portfolio";
-import { formatZMW } from "@/lib/format";
-
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString("en-ZM", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
-}
+import { formatZMW, formatYield, formatDateZM } from "@/lib/format";
 
 function daysToMaturity(maturityDate: string): number {
-  const diff =
-    new Date(maturityDate).getTime() - Date.now();
+  const diff = new Date(maturityDate).getTime() - Date.now();
   return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
 }
 
@@ -24,14 +15,13 @@ export default function TBillsPage() {
   return (
     <div className="space-y-6">
       <section>
-        <h1 className="text-2xl font-bold tracking-tight">T-Bills</h1>
+        <h1 className="text-2xl font-bold tracking-tight font-display">T-Bills</h1>
         <p className="text-sm text-muted-foreground mt-1">
           GRZ government T-bills via the Bank of Zambia auction. WHT of 15%
           applies to all interest earned.
         </p>
       </section>
 
-      {/* My holdings */}
       {DEMO_PORTFOLIO.tbills.length > 0 && (
         <section>
           <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">
@@ -42,32 +32,24 @@ export default function TBillsPage() {
               const days = daysToMaturity(holding.maturityDate);
               const netYield = netYieldAfterWHT(holding.tenor.yieldPercent);
               return (
-                <Card key={idx}>
+                <Card key={idx} className="border border-brand-ink/10">
                   <CardContent className="py-4 px-4 space-y-3">
                     <div className="flex items-start justify-between">
                       <div>
-                        <p className="font-semibold text-sm">
-                          {holding.tenor.label}
-                        </p>
+                        <p className="font-semibold text-sm">{holding.tenor.label}</p>
                         <p className="text-xs text-muted-foreground">
-                          Matures {formatDate(holding.maturityDate)} - {days}{" "}
-                          days left
+                          Matures {formatDateZM(holding.maturityDate)} - {days} days left
                         </p>
                       </div>
                       <div className="text-right">
-                        <p className="font-semibold text-sm">
+                        <p className="font-semibold text-sm tabular-nums">
                           {formatZMW(holding.faceValueNgwee)}
                         </p>
-                        <p className="text-xs text-muted-foreground">
-                          face value
-                        </p>
+                        <p className="text-xs text-muted-foreground">face value</p>
                       </div>
                     </div>
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="text-muted-foreground">
-                        Gross yield: {holding.tenor.yieldPercent.toFixed(2)}% -
-                        Net after WHT: {netYield.toFixed(2)}%
-                      </span>
+                    <div className="text-xs text-muted-foreground tabular-nums">
+                      Gross yield: {formatYield(holding.tenor.yieldPercent)} - Net after WHT: {formatYield(netYield)}
                     </div>
                     <AutorollToggle initialValue={holding.autoRoll} />
                   </CardContent>
@@ -78,40 +60,37 @@ export default function TBillsPage() {
         </section>
       )}
 
-      {/* Available tenors */}
       <section>
         <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">
-          Available at next auction - {formatDate(TBILL_TENORS[0].nextAuctionDate)}
+          Available at next auction - {formatDateZM(TBILL_TENORS[0].nextAuctionDate)}
         </h2>
         <div className="space-y-3">
           {TBILL_TENORS.map((tenor) => {
             const netYield = netYieldAfterWHT(tenor.yieldPercent);
             return (
-              <Card key={tenor.tenorDays}>
+              <Card key={tenor.tenorDays} className="border border-brand-ink/10">
                 <CardContent className="py-4 px-4">
                   <div className="flex items-center justify-between">
                     <div>
                       <div className="flex items-center gap-2 mb-0.5">
                         <p className="font-semibold text-sm">{tenor.label}</p>
-                        <Badge variant="outline" className="text-xs">
-                          {tenor.tenorDays}d
-                        </Badge>
+                        <Badge variant="outline" className="text-xs">{tenor.tenorDays}d</Badge>
                       </div>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-xs text-muted-foreground tabular-nums">
                         Min bid {formatZMW(tenor.minBidZMW * 100)}
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="text-lg font-bold text-green-700">
-                        {tenor.yieldPercent.toFixed(2)}%
+                      <p className="text-3xl font-bold text-brand-copper tabular-nums font-display">
+                        {formatYield(tenor.yieldPercent)}
                       </p>
-                      <p className="text-xs text-muted-foreground">
-                        {netYield.toFixed(2)}% net after WHT
+                      <p className="text-xs text-muted-foreground tabular-nums">
+                        {formatYield(netYield)} net after WHT
                       </p>
                     </div>
                   </div>
                   <div className="mt-3">
-                    <Button size="sm" className="w-full" variant="outline">
+                    <Button size="sm" className="w-full bg-brand-green hover:bg-brand-green-light text-brand-cream">
                       Place bid (demo)
                     </Button>
                   </div>
@@ -124,7 +103,7 @@ export default function TBillsPage() {
 
       <p className="text-xs text-muted-foreground pb-2">
         Yields shown are from the last auction on{" "}
-        {formatDate(TBILL_TENORS[0].lastAuctionDate)}. Actual allotment rates
+        {formatDateZM(TBILL_TENORS[0].lastAuctionDate)}. Actual allotment rates
         vary by auction.
       </p>
     </div>

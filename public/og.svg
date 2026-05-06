@@ -1,0 +1,10 @@
+<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="630" fill="#0A0A0B"/>
+  <rect x="0" y="0" width="8" height="630" fill="#0E5C2F"/>
+  <circle cx="1120" cy="315" r="90" fill="#0E5C2F" opacity="0.15"/>
+  <circle cx="1120" cy="315" r="70" fill="#0E5C2F" opacity="0.25"/>
+  <text x="80" y="290" font-family="system-ui, sans-serif" font-size="100" font-weight="700" fill="#FAF8F4" letter-spacing="-2">Capital</text>
+  <text x="84" y="360" font-family="system-ui, sans-serif" font-size="30" fill="#B87333" letter-spacing="1">INVEST IN ZAMBIA</text>
+  <text x="84" y="420" font-family="system-ui, sans-serif" font-size="22" fill="#FAF8F4" opacity="0.45">LuSE equities  -  GRZ T-bills  -  AI research</text>
+  <text x="1120" y="340" font-family="system-ui, sans-serif" font-size="72" font-weight="700" fill="#FAF8F4" text-anchor="middle" opacity="0.9">C</text>
+</svg>

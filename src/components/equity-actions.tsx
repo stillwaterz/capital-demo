@@ -9,9 +9,10 @@ type Props = {
   symbol: string;
   name: string;
   lastPriceNgwee: number;
+  mobile?: boolean;
 };
 
-export function EquityActions({ symbol, name, lastPriceNgwee }: Props) {
+export function EquityActions({ symbol, name, lastPriceNgwee, mobile }: Props) {
   const [dialog, setDialog] = useState<"buy" | "sell" | null>(null);
   const router = useRouter();
 
@@ -22,20 +23,27 @@ export function EquityActions({ symbol, name, lastPriceNgwee }: Props) {
 
   return (
     <>
-      <div className="flex gap-2">
-        <Button onClick={() => setDialog("buy")} size="sm">
+      <div className={mobile ? "flex gap-3 w-full" : "flex gap-2"}>
+        <Button
+          onClick={() => setDialog("buy")}
+          size={mobile ? "default" : "sm"}
+          className={`bg-brand-green hover:bg-brand-green-light text-brand-cream active:scale-98 ${mobile ? "flex-1" : ""}`}
+        >
           Buy
         </Button>
         <Button
           onClick={() => setDialog("sell")}
-          size="sm"
+          size={mobile ? "default" : "sm"}
           variant="destructive"
+          className={`active:scale-98 ${mobile ? "flex-1" : ""}`}
         >
           Sell
         </Button>
-        <Button onClick={handleAskClick} size="sm" variant="outline">
-          Why did it move?
-        </Button>
+        {!mobile && (
+          <Button onClick={handleAskClick} size="sm" variant="outline" className="active:scale-98">
+            Why did it move?
+          </Button>
+        )}
       </div>
 
       {dialog && (
