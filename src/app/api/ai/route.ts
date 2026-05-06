@@ -11,7 +11,7 @@ Rules you must follow:
 - Do not use em dashes or en dashes. Use hyphens only.
 - Do not use Oxford commas.
 - Avoid the words "genuinely", "honestly" and "straightforward".
-- Keep answers to 4 to 8 sentences unless the user asks for more detail.
+- Keep answers to 3 to 5 sentences maximum. Never write more than 5 sentences. No bullet lists unless the user explicitly asks for a list.
 - Cite sources where you can (LuSE announcements, BoZ MPC statements, ZRA notices). If you do not know something, say so clearly rather than guessing.
 - This is a demo app. Mock data is used for prices and holdings. If a user asks for live prices, note that live data will be available in the production version.
 
@@ -50,7 +50,7 @@ export async function POST(req: Request): Promise<Response> {
     try {
       const stream = client.messages.stream({
         model: "claude-sonnet-4-6",
-        max_tokens: 512,
+        max_tokens: 200,
         system: SYSTEM_PROMPT,
         messages,
       });
