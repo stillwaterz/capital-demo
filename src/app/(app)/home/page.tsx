@@ -13,6 +13,7 @@ import { Greeting } from "@/components/greeting";
 import { PortfolioHeader } from "@/components/portfolio-header";
 import { AiBriefing } from "@/components/ai-briefing";
 import { MarketPulse } from "@/components/market-pulse";
+import { MarketRecap } from "@/components/market-recap";
 import { SmartSuggestion } from "@/components/smart-suggestion";
 import { GoalsWidget } from "@/components/goals-widget";
 import { getMergedNews } from "@/lib/data/merged-news";
@@ -42,6 +43,8 @@ export default async function DashboardPage() {
       <AiBriefing />
 
       <MarketPulse />
+
+      <MarketRecap />
 
       <PortfolioHeader totalNgwee={totalNgwee} fallbackName={DEMO_PORTFOLIO.displayName} />
 

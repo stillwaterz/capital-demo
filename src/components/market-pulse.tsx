@@ -27,7 +27,7 @@ export async function MarketPulse() {
   const topLoser = topMover("down");
 
   const tiles: Tile[] = [
-    { label: "LuSE ALSI", value: "4,812.5", change: +0.43, unit: "", live: false },
+    { label: "LuSE ALSI", value: "26,680.94", change: -0.15, unit: "", live: false },
     {
       label: "USD/ZMW",
       value: fx ? fx.rate.toFixed(2) : "27.14",
