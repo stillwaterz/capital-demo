@@ -14,7 +14,6 @@ export function LandingNav() {
 
       <div className="hidden sm:flex items-center gap-6 text-sm text-brand-cream/60">
         <Link href="#features" className="hover:text-brand-cream transition-colors">Markets</Link>
-        <Link href="#features" className="hover:text-brand-cream transition-colors">Government bonds</Link>
         <Link href="#preview" className="hover:text-brand-cream transition-colors">AI</Link>
         <Link href="#cta" className="hover:text-brand-cream transition-colors">Pricing</Link>
       </div>

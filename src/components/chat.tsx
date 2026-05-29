@@ -13,8 +13,8 @@ type Message = {
 const SUGGESTIONS = [
   "Why did Zambeef move today?",
   "What is the current BoZ policy rate?",
-  "Explain T-bill auto-roll",
-  "How does WHT work on T-bill interest?",
+  "How do share dividends work?",
+  "How does WHT work on dividends?",
 ];
 
 type Props = { initialQuery?: string };
@@ -108,8 +108,7 @@ export function Chat({ initialQuery }: Props) {
         {messages.length === 0 && (
           <div className="space-y-3 pt-2">
             <p className="text-sm text-muted-foreground">
-              Ask about any LuSE counter, T-bill yields, BoZ policy or market
-              news.
+              Ask about any LuSE counter, BoZ policy or market news.
             </p>
             <div className="flex flex-wrap gap-2">
               {SUGGESTIONS.map((s) => (

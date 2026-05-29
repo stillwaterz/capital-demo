@@ -20,15 +20,10 @@ function buildPortfolioSummary(): string {
     const pnl = holdingPnLPercent(h);
     return `${h.instrument.symbol} (${h.instrument.name}): ${formatZMW(h.sharesHeld * h.instrument.lastPriceNgwee)}, ${formatPercent(pnl)} P/L, today ${formatPercent(h.instrument.changePercent)}`;
   });
-  const tbillLines = DEMO_PORTFOLIO.tbills.map(
-    (t) => `${t.tenor.label} T-bill: face value ${formatZMW(t.faceValueNgwee)}, yield ${t.tenor.yieldPercent}%, matures ${t.maturityDate}${t.autoRoll ? " (auto-roll on)" : ""}`
-  );
   return [
     `Total portfolio value: ${formatZMW(total)}`,
     "Equities:",
     ...equityLines,
-    "T-bills:",
-    ...tbillLines,
   ].join("\n");
 }
 

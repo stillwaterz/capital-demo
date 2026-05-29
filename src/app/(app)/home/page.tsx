@@ -8,13 +8,11 @@ import {
   holdingPnLPercent,
 } from "@/lib/mock/portfolio";
 import { formatZMW, formatPercent, formatDateZM } from "@/lib/format";
-import { TBILL_TENORS } from "@/lib/mock/tbills";
 import { Greeting } from "@/components/greeting";
 import { PortfolioHeader } from "@/components/portfolio-header";
 import { AiBriefing } from "@/components/ai-briefing";
 import { MarketPulse } from "@/components/market-pulse";
 import { MarketRecap } from "@/components/market-recap";
-import { SmartSuggestion } from "@/components/smart-suggestion";
 import { GoalsWidget } from "@/components/goals-widget";
 import { getMergedNews } from "@/lib/data/merged-news";
 
@@ -34,7 +32,6 @@ function ChangeLabel({ pct }: { pct: number }) {
 export default async function DashboardPage() {
   const totalNgwee = portfolioTotalNgwee(DEMO_PORTFOLIO);
   const mergedNews = await getMergedNews(3);
-  const nextAuction = TBILL_TENORS[0].nextAuctionDate;
 
   return (
     <div className="space-y-8">
@@ -47,8 +44,6 @@ export default async function DashboardPage() {
       <MarketRecap />
 
       <PortfolioHeader totalNgwee={totalNgwee} fallbackName={DEMO_PORTFOLIO.displayName} />
-
-      <SmartSuggestion />
 
       {/* Equity holdings */}
       <section>
@@ -87,43 +82,6 @@ export default async function DashboardPage() {
             );
           })}
         </div>
-      </section>
-
-      {/* T-bills strip */}
-      <section>
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">
-            T-Bills
-          </h2>
-          <Link href="/tbills" className="text-sm text-brand-green hover:underline">
-            View all
-          </Link>
-        </div>
-        <Card className="border border-brand-ink/10">
-          <CardContent className="py-4 px-5 min-h-16">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-base font-medium">Next auction</p>
-                <p className="text-sm text-muted-foreground">
-                  {formatDateZM(nextAuction)}
-                </p>
-              </div>
-              <div className="text-right">
-                <p className="text-base font-medium tabular-nums">
-                  {DEMO_PORTFOLIO.tbills.length} holdings
-                </p>
-                <p className="text-sm text-muted-foreground tabular-nums">
-                  {formatZMW(
-                    DEMO_PORTFOLIO.tbills.reduce(
-                      (s, h) => s + h.faceValueNgwee,
-                      0
-                    )
-                  )}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
       </section>
 
       <GoalsWidget />

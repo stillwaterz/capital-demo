@@ -9,7 +9,6 @@ import { useUserStore } from "@/lib/store/user";
 const LINKS = [
   { href: "/home", label: "Home" },
   { href: "/equities", label: "Equities" },
-  { href: "/tbills", label: "T-Bills" },
   { href: "/news", label: "News" },
   { href: "/ask", label: "Ask" },
 ] as const;

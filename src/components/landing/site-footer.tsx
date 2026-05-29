@@ -3,8 +3,6 @@ import Link from "next/link";
 const LINKS = {
   Markets: [
     { label: "LuSE Equities", href: "/equities" },
-    { label: "Government Bonds", href: "/tbills" },
-    { label: "T-Bills", href: "/tbills" },
     { label: "News", href: "/news" },
   ],
   Company: [

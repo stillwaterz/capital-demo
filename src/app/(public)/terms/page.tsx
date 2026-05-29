@@ -41,7 +41,7 @@ export default function TermsPage() {
       <section className="space-y-3">
         <h2 className="text-lg font-bold">5. Risks</h2>
         <p className="text-base text-muted-foreground leading-relaxed">
-          Investing in equities and government securities carries risk. You may receive less than you invest. Equity prices can fall as well as rise. T-bill yields vary by auction and are not guaranteed. Currency movements may affect returns. Always read the Risk Disclosure before investing.
+          Investing in LuSE equities carries risk. You may receive less than you invest. Equity prices can fall as well as rise. Currency movements may affect returns. Always read the Risk Disclosure before investing.
         </p>
       </section>
 

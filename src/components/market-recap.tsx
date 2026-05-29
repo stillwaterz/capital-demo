@@ -19,14 +19,6 @@ const FX_RATES = [
   { pair: "ZAR/ZMW", mid: 1.131 },
 ];
 
-const BOND_YIELDS = [
-  { tenor: "2Y",  yield: 14.25 },
-  { tenor: "3Y",  yield: 14.50 },
-  { tenor: "7Y",  yield: 16.00 },
-  { tenor: "10Y", yield: 16.60 },
-  { tenor: "15Y", yield: 17.59 },
-];
-
 const AFRICAN_INDICES = [
   { name: "LuSE ASI", value: "26,680.94", change: -0.15 },
   { name: "JSE ASI",  value: "115,180.53", change: +1.15 },
@@ -112,19 +104,6 @@ export function MarketRecap() {
           </div>
         </div>
 
-        {/* Bond yields */}
-        <div className="px-5 py-3 border-b border-brand-cream/10">
-          <p className="text-xs font-semibold uppercase tracking-widest text-brand-cream/50 mb-2">GRZ Bond Yields</p>
-          <div className="flex gap-4 overflow-x-auto">
-            {BOND_YIELDS.map((b) => (
-              <div key={b.tenor} className="shrink-0">
-                <p className="text-xs text-brand-cream/50">{b.tenor}</p>
-                <p className="text-sm font-semibold tabular-nums text-brand-copper">{b.yield.toFixed(2)}%</p>
-              </div>
-            ))}
-          </div>
-        </div>
-
         {/* African indices */}
         <div className="px-5 py-3 border-b border-brand-cream/10">
           <p className="text-xs font-semibold uppercase tracking-widest text-brand-cream/50 mb-2">African Markets</p>
@@ -148,7 +127,7 @@ export function MarketRecap() {
         <div className="px-5 py-3 flex items-center justify-between gap-4">
           <div className="flex items-center gap-2 text-brand-cream/60">
             <Calendar size={13} />
-            <p className="text-xs">Bonds auction - 26 Jun 2026</p>
+            <p className="text-xs">Next MPC meeting - 26 Jun 2026</p>
           </div>
           <p className="text-xs text-brand-cream/30 text-right leading-tight">
             {REPORT_SOURCE}

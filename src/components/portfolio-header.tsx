@@ -22,7 +22,7 @@ export function PortfolioHeader({ totalNgwee, fallbackName }: Props) {
         {formatZMW(totalNgwee)}
       </p>
       <p className="text-sm text-muted-foreground mt-1.5">
-        Equities and T-bills at current value
+        Your shares at current value
       </p>
     </section>
   );

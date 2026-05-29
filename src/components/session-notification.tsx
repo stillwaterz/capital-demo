@@ -7,8 +7,8 @@ import { X } from "lucide-react";
 
 const NOTIFICATION = {
   title: "BoZ held rates at 13.5%",
-  body: "Tap to see what this means for your T-bills.",
-  route: "/tbills",
+  body: "Tap to see what this means for your shares.",
+  route: "/news",
 };
 
 const DELAY_MS = 25_000;

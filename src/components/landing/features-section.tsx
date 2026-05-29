@@ -13,8 +13,8 @@ const CARDS = [
   {
     icon: TrendingUp,
     iconColor: "text-brand-copper",
-    title: "Equities and government securities, one app",
-    body: "Buy LuSE shares and government T-bills and bonds from a single wallet. Auto-roll your T-bills at maturity. Track everything in real time.",
+    title: "LuSE shares, one app",
+    body: "Buy and sell LuSE shares from a single wallet. Track your holdings and watch the market move in real time.",
   },
   {
     icon: ShieldCheck,

@@ -15,7 +15,7 @@ export default function PrivacyPage() {
         <ul className="space-y-2 text-base text-muted-foreground">
           <li>Phone number and name when you register.</li>
           <li>KYC documents (NRC or passport, proof of address) when you verify your account.</li>
-          <li>Transaction records including orders placed, T-bill bids and portfolio holdings.</li>
+          <li>Transaction records including orders placed and portfolio holdings.</li>
           <li>Device information and usage data to improve the platform.</li>
           <li>Questions you ask the AI assistant, to improve AI quality.</li>
         </ul>

@@ -31,7 +31,7 @@ export function PhoneMockup() {
               <span className="text-[8px] font-semibold uppercase tracking-wider text-brand-copper">AI Briefing</span>
             </div>
             <p className="text-[10px] text-brand-cream/70 italic leading-relaxed line-clamp-2">
-              Zambeef is up 2.9% today after strong half-year results. Your T-bill matures in 10 days.
+              Zambeef is up 2.9% today after strong half-year results. SCBL goes ex-dividend in 10 days.
             </p>
           </div>
 

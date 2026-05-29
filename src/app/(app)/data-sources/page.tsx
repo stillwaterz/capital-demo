@@ -23,8 +23,8 @@ const SOURCES = [
     live: false,
   },
   {
-    label: "T-bill yields and BoZ rate",
-    detail: "Demo data based on recent BoZ auction results. Live via Pangaea on launch.",
+    label: "BoZ policy rate",
+    detail: "Demo data based on recent BoZ announcements. Live via Pangaea on launch.",
     live: false,
   },
   {

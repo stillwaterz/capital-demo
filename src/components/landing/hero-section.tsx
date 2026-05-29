@@ -41,7 +41,7 @@ export function HeroSection() {
               Where Zambia invests.
             </motion.h1>
             <motion.p {...FADE_UP(0.2)} className="text-lg sm:text-xl text-brand-cream/70 max-w-xl mb-8 leading-relaxed mx-auto sm:mx-0">
-              AI-powered access to LuSE shares and government securities. Real-time research, daily briefings and news intelligence in plain English.
+              AI-powered access to LuSE shares. Real-time research, daily briefings and news intelligence in plain English.
             </motion.p>
             <motion.div {...FADE_UP(0.3)} className="flex flex-col sm:flex-row gap-3 justify-center sm:justify-start">
               <Link
@@ -90,15 +90,6 @@ export function HeroSection() {
             >
               <p className="text-[10px] text-brand-cream/60 mb-1">You asked:</p>
               <p className="text-xs font-medium text-brand-cream leading-snug">Why did Zambeef move today?</p>
-            </motion.div>
-
-            {/* Floating badge: auto-roll */}
-            <motion.div
-              animate={{ y: [0, -4, 0] }}
-              transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" as const, delay: 0.7 }}
-              className="absolute top-1/2 -left-4 sm:-left-12 -translate-y-1/2 flex items-center gap-1.5 bg-brand-green text-brand-cream rounded-full px-3 py-1.5 shadow-lg text-xs font-semibold"
-            >
-              <span>✓</span> Auto-roll on
             </motion.div>
           </motion.div>
         </div>

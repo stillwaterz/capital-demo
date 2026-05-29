@@ -28,7 +28,7 @@ export const NEWS_ITEMS: NewsItem[] = [
     category: "BoZ",
     headline: "Bank of Zambia holds policy rate at 13.5% for May 2026",
     summary:
-      "The Monetary Policy Committee kept the benchmark rate unchanged at 13.5%. The committee noted that inflation remains within the 6-8% target band and that T-bill yields continue to reflect a tight but stable liquidity environment. The next MPC meeting is scheduled for July 2026.",
+      "The Monetary Policy Committee kept the benchmark rate unchanged at 13.5%. The committee noted that inflation remains within the 6-8% target band and that liquidity conditions stayed tight but stable. The next MPC meeting is scheduled for July 2026.",
     relatedSymbols: [],
   },
   {
@@ -60,16 +60,6 @@ export const NEWS_ITEMS: NewsItem[] = [
     summary:
       "Standard Chartered Bank Zambia (SCBL) announced an interim dividend payable to shareholders on record as of 20 May 2026. WHT at 15% will be deducted at source per ZRA rules. The amount per share shown here is demo data - refer to the official LuSE announcement for verified figures.",
     relatedSymbols: ["SCBL"],
-  },
-  {
-    id: "n6",
-    timestamp: "2026-05-04T16:30:00Z",
-    source: "MoF Gazette",
-    category: "Market",
-    headline: "MoF announces ZMW 800 million T-bill issuance for May 9 auction",
-    summary:
-      "The Ministry of Finance confirmed a ZMW 800 million T-bill auction on 9 May 2026 across the 91, 182, 273 and 364-day tenors. Allotment targets are ZMW 150 million for 91-day, ZMW 200 million for 182-day, ZMW 200 million for 273-day and ZMW 250 million for 364-day. Non-competitive bids accepted up to ZMW 5 million per investor.",
-    relatedSymbols: [],
   },
   {
     id: "n7",

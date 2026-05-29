@@ -25,13 +25,6 @@ export default function RiskPage() {
       </section>
 
       <section className="space-y-3">
-        <h2 className="text-lg font-bold">T-Bill and government security risk</h2>
-        <p className="text-base text-muted-foreground leading-relaxed">
-          GRZ Treasury Bills are issued by the Zambian government and are generally considered lower risk than equities. However, T-bill yields vary by auction - the rate you see today may differ from the rate at the next auction. Holding to maturity guarantees the face value, but early exit may result in a lower return. In rare circumstances, a sovereign could fail to meet obligations.
-        </p>
-      </section>
-
-      <section className="space-y-3">
         <h2 className="text-lg font-bold">Currency risk</h2>
         <p className="text-base text-muted-foreground leading-relaxed">
           All returns are in Zambian Kwacha (ZMW). If you invested in foreign currency and converted to ZMW, or if you plan to convert returns back to foreign currency, movements in the exchange rate can increase or reduce your effective return.
@@ -41,14 +34,14 @@ export default function RiskPage() {
       <section className="space-y-3">
         <h2 className="text-lg font-bold">Liquidity risk</h2>
         <p className="text-base text-muted-foreground leading-relaxed">
-          LuSE is a smaller exchange compared to larger global markets. Some counters trade infrequently and you may not always be able to sell shares quickly at the price you want. T-bills held to maturity are liquid at face value. Early redemption before maturity may be subject to market conditions.
+          LuSE is a smaller exchange compared to larger global markets. Some counters trade infrequently and you may not always be able to sell shares quickly at the price you want.
         </p>
       </section>
 
       <section className="space-y-3">
         <h2 className="text-lg font-bold">Tax</h2>
         <p className="text-base text-muted-foreground leading-relaxed">
-          Withholding Tax (WHT) of 15% applies to interest earned on T-bills and to dividends from LuSE-listed companies. MarketLink and Pangaea Securities deduct this at source. Capital gains on equity sales may also be subject to tax. Consult a Zambian tax advisor for your specific situation.
+          Withholding Tax (WHT) of 15% applies to dividends from LuSE-listed companies. MarketLink and Pangaea Securities deduct this at source. Capital gains on equity sales may also be subject to tax. Consult a Zambian tax advisor for your specific situation.
         </p>
       </section>
 
