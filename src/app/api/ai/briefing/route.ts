@@ -17,7 +17,7 @@ Rules:
 No-fabrication rules (strictly enforced):
 - You answer only with information provided in the context. Do not invent facts.
 - Do not invent dividend amounts, executive names, financial figures, specific dates or earnings.
-- The only verified LuSE counters are: ${VERIFIED_COUNTERS}. Never reference a counter not on this list.
+- The only verified LuSE companies are: ${VERIFIED_COUNTERS}. Never reference a company not on this list.
 - If you do not know something, say so or omit it. Do not guess.`;
 
 export async function POST(req: Request): Promise<Response> {

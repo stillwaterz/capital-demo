@@ -1,122 +1,89 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
-import { Menu, X, LogOut, User } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { Home, TrendingUp, Newspaper, Sparkles, User } from "lucide-react";
 import { useUserStore } from "@/lib/store/user";
 
-const LINKS = [
-  { href: "/home", label: "Home" },
-  { href: "/equities", label: "Equities" },
-  { href: "/news", label: "News" },
-  { href: "/ask", label: "Ask" },
+const TABS = [
+  { href: "/home", label: "Home", icon: Home },
+  { href: "/equities", label: "Stocks", icon: TrendingUp },
+  { href: "/news", label: "News", icon: Newspaper },
+  { href: "/ask", label: "Ask", icon: Sparkles },
+  { href: "/profile", label: "Profile", icon: User },
 ] as const;
+
+const DESKTOP_LINKS = TABS.filter((tab) => tab.href !== "/profile");
+
+function isActive(pathname: string, href: string) {
+  if (href === "/home") return pathname === "/home";
+  return pathname.startsWith(href);
+}
 
 export function Nav() {
   const pathname = usePathname();
-  const router = useRouter();
-  const [open, setOpen] = useState(false);
-  const { name, isLoggedIn, logout } = useUserStore();
-
-  function isActive(href: string) {
-    if (href === "/home") return pathname === "/home";
-    return pathname.startsWith(href);
-  }
-
-  function handleLogout() {
-    logout();
-    setOpen(false);
-    router.push("/login");
-  }
+  const { name, isLoggedIn } = useUserStore();
 
   const initials = name ? name.slice(0, 1).toUpperCase() : "?";
 
   return (
-    <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur">
-      <div className="container mx-auto max-w-3xl px-4 h-14 flex items-center justify-between">
-        <Link
-          href="/"
-          className="font-bold text-lg tracking-tight font-display"
-          onClick={() => setOpen(false)}
-        >
-          MarketLink
-        </Link>
+    <>
+      <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur">
+        <div className="container mx-auto max-w-3xl px-4 h-14 flex items-center justify-between">
+          <Link href="/" className="font-bold text-lg tracking-tight font-display">
+            MarketLink
+          </Link>
 
-        {/* Desktop nav */}
-        <nav className="hidden sm:flex items-center gap-1">
-          {LINKS.map(({ href, label }) => (
-            <Link
-              key={href}
-              href={href}
-              className={`px-3 py-1.5 rounded-md text-sm transition-colors ${
-                isActive(href)
-                  ? "bg-primary text-primary-foreground"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
-              }`}
-            >
-              {label}
-            </Link>
-          ))}
-          {isLoggedIn && (
-            <Link
-              href="/profile"
-              className="ml-2 flex items-center justify-center w-8 h-8 rounded-full bg-brand-green text-brand-cream text-sm font-bold hover:bg-brand-green-light transition-colors"
-              title={`${name || "Account"} - Profile`}
-            >
-              {initials}
-            </Link>
-          )}
-        </nav>
-
-        {/* Mobile menu button */}
-        <button
-          className="sm:hidden p-2 rounded-md hover:bg-muted"
-          onClick={() => setOpen((v) => !v)}
-          aria-label="Toggle menu"
-        >
-          {open ? <X size={20} /> : <Menu size={20} />}
-        </button>
-      </div>
-
-      {/* Mobile dropdown */}
-      {open && (
-        <div className="sm:hidden border-t bg-background px-4 py-3 flex flex-col gap-1">
-          {LINKS.map(({ href, label }) => (
-            <Link
-              key={href}
-              href={href}
-              onClick={() => setOpen(false)}
-              className={`px-3 py-3 rounded-md text-base transition-colors ${
-                isActive(href)
-                  ? "bg-primary text-primary-foreground"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
-              }`}
-            >
-              {label}
-            </Link>
-          ))}
-          {isLoggedIn && (
-            <>
+          {/* Desktop nav */}
+          <nav className="hidden sm:flex items-center gap-1">
+            {DESKTOP_LINKS.map(({ href, label }) => (
+              <Link
+                key={href}
+                href={href}
+                className={`px-3 py-1.5 rounded-md text-sm transition-colors ${
+                  isActive(pathname, href)
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                }`}
+              >
+                {label}
+              </Link>
+            ))}
+            {isLoggedIn && (
               <Link
                 href="/profile"
-                onClick={() => setOpen(false)}
-                className="flex items-center gap-2 px-3 py-3 rounded-md text-base text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                className="ml-2 flex items-center justify-center w-8 h-8 rounded-full bg-brand-green text-brand-cream text-sm font-bold hover:bg-brand-green-light transition-colors"
+                title={`${name || "Account"} - Profile`}
               >
-                <User size={16} />
-                Profile {name ? `(${name})` : ""}
+                {initials}
               </Link>
-              <button
-                onClick={handleLogout}
-                className="flex items-center gap-2 px-3 py-3 rounded-md text-base text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-              >
-                <LogOut size={16} />
-                Sign out
-              </button>
-            </>
-          )}
+            )}
+          </nav>
         </div>
-      )}
-    </header>
+      </header>
+
+      {/* Mobile bottom tab bar */}
+      <nav className="sm:hidden fixed bottom-0 inset-x-0 z-50 border-t bg-background/95 backdrop-blur pb-[env(safe-area-inset-bottom)]">
+        <div className="flex items-stretch justify-around">
+          {TABS.map(({ href, label, icon: Icon }) => {
+            const active = isActive(pathname, href);
+            return (
+              <Link
+                key={href}
+                href={href}
+                aria-label={label}
+                aria-current={active ? "page" : undefined}
+                className={`flex flex-1 flex-col items-center justify-center gap-0.5 py-2 text-[11px] font-medium transition-colors ${
+                  active ? "text-brand-green" : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <Icon size={22} strokeWidth={active ? 2.4 : 2} />
+                <span>{label}</span>
+              </Link>
+            );
+          })}
+        </div>
+      </nav>
+    </>
   );
 }

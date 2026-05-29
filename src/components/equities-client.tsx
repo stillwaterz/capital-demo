@@ -60,7 +60,7 @@ export function EquitiesClient({ instruments }: { instruments: Instrument[] }) {
             {s === "alpha" ? "A-Z" : s === "change" ? "Daily change" : "Price"}
           </button>
         ))}
-        <span className="ml-auto text-xs text-muted-foreground">{filtered.length} counters</span>
+        <span className="ml-auto text-xs text-muted-foreground">{filtered.length} companies</span>
       </div>
 
       {/* List */}
