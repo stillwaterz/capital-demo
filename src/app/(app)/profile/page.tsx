@@ -6,7 +6,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useUserStore } from "@/lib/store/user";
-import { LogOut, User, Phone, Shield, CreditCard, FileText } from "lucide-react";
+import { useCustomerWalletStore } from "@/lib/store/customer-wallet";
+import { FundWalletDialog } from "@/components/fund-wallet-dialog";
+import { formatZMW } from "@/lib/format";
+import { LogOut, User, Phone, Shield, CreditCard, FileText, Wallet } from "lucide-react";
 
 const MOCK_PAYMENT_METHODS = [
   { label: "Airtel Money", detail: "+260 9XX XXX XXX", active: true },
@@ -16,8 +19,10 @@ const MOCK_PAYMENT_METHODS = [
 
 export default function ProfilePage() {
   const [mounted, setMounted] = useState(false);
+  const [fundOpen, setFundOpen] = useState(false);
   const router = useRouter();
   const { name, phone, isLoggedIn, logout, setName } = useUserStore();
+  const balanceNgwee = useCustomerWalletStore((s) => s.balanceNgwee);
   const [editing, setEditing] = useState(false);
   const [draftName, setDraftName] = useState("");
 
@@ -61,6 +66,31 @@ export default function ProfilePage() {
           <Badge variant="outline" className="text-xs">Demo account</Badge>
         </div>
       </div>
+
+      {/* Wallet */}
+      <Card className="border border-brand-ink/10">
+        <CardContent className="py-5 px-5 space-y-3">
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <Wallet size={15} />
+            <span className="text-xs font-semibold uppercase tracking-widest">Cash wallet</span>
+          </div>
+          <p className="text-2xl font-bold font-display tabular-nums">
+            {formatZMW(balanceNgwee)}
+          </p>
+          <Button
+            type="button"
+            className="w-full bg-brand-green hover:bg-brand-green-light text-brand-cream"
+            onClick={() => setFundOpen(true)}
+          >
+            Fund wallet
+          </Button>
+          <p className="text-xs text-muted-foreground">
+            Demo deposit via Airtel Money. Funds appear in ops treasury float.
+          </p>
+        </CardContent>
+      </Card>
+
+      <FundWalletDialog open={fundOpen} onClose={() => setFundOpen(false)} />
 
       {/* Display name */}
       <Card className="border border-brand-ink/10">

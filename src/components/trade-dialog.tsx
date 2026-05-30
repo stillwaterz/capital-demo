@@ -13,6 +13,9 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { formatZMW } from "@/lib/format";
+import { useUserStore } from "@/lib/store/user";
+import { useOpsClockStore } from "@/lib/store/ops-clock";
+import { useCustomerOrdersStore } from "@/lib/store/customer-orders";
 
 type Side = "buy" | "sell";
 type EntryMode = "amount" | "shares";
@@ -133,6 +136,17 @@ export function TradeDialog({
   );
 
   function handleConfirm() {
+    const displayName = useUserStore.getState().name || "Chanda M.";
+    const businessDate = useOpsClockStore.getState().businessDate;
+    useCustomerOrdersStore.getState().placeOrder({
+      symbol,
+      name,
+      side: side === "buy" ? "BUY" : "SELL",
+      quantity: sharesNum,
+      priceNgwee: lastPriceNgwee,
+      tradeDate: businessDate,
+      clientName: displayName,
+    });
     setConfirmed(true);
     setTimeout(() => {
       setConfirmed(false);
@@ -158,7 +172,8 @@ export function TradeDialog({
               Order sent to broker
             </p>
             <p className="text-sm text-muted-foreground mt-1">
-              Your order is queued for execution at the next LuSE session.
+              Your order is queued for execution at the next LuSE session. Switch
+              to Operations to see it on the settlement board.
             </p>
           </div>
         ) : (
