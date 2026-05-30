@@ -34,8 +34,13 @@ import {
 export function ControlTowerBoard() {
   const businessDate = useOpsClockStore((s) => s.businessDate);
   const orders = useCustomerOrdersStore((s) => s.orders);
-  const pendingProposals = useOpsGovernanceStore((s) =>
-    s.proposals.filter((p) => p.status === "PENDING")
+  // Select the stable array reference from the store, then derive. Filtering
+  // inside the selector returns a new array each render, which makes Zustand v5
+  // (useSyncExternalStore) re-render forever -> "Maximum update depth exceeded".
+  const proposals = useOpsGovernanceStore((s) => s.proposals);
+  const pendingProposals = useMemo(
+    () => proposals.filter((p) => p.status === "PENDING"),
+    [proposals]
   );
 
   const extraTrades = useMemo(
