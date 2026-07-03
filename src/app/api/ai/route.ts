@@ -1,3 +1,4 @@
+import { sameOriginOk } from "@/lib/ai/guard";
 import { stripDashes } from "@/lib/ai/sanitize";
 import Anthropic from "@anthropic-ai/sdk";
 
@@ -24,6 +25,7 @@ No-fabrication rules (strictly enforced):
 type MessageParam = { role: "user" | "assistant"; content: string };
 
 export async function POST(req: Request): Promise<Response> {
+  if (!sameOriginOk(req)) return new Response("Forbidden", { status: 403 });
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
     return new Response("ANTHROPIC_API_KEY is not set", { status: 500 });
