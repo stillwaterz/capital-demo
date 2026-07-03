@@ -13,6 +13,7 @@ import { formatZMW } from "@/lib/format";
 import { formatDateZM } from "@/lib/format";
 import { DEMO_TODAY } from "@/lib/ops/clock";
 import { AskAiButton } from "@/components/ops/ask-ai-button";
+import { SurveillancePanel } from "@/components/ops/surveillance-panel";
 
 function formatAmount(amountNgwee: number | null): string {
   return amountNgwee === null ? "-" : formatZMW(amountNgwee);
@@ -89,6 +90,8 @@ export default function CompliancePage() {
           </p>
         </CardContent>
       </Card>
+
+      <SurveillancePanel />
 
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>

@@ -47,9 +47,14 @@ export default async function DashboardPage() {
 
       {/* Equity holdings */}
       <section>
-        <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-3">
-          Equities
-        </h2>
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">
+            Equities
+          </h2>
+          <Link href="/portfolio" className="text-sm text-brand-green hover:underline">
+            See portfolio
+          </Link>
+        </div>
         <div className="space-y-3">
           {DEMO_PORTFOLIO.equities.map((holding) => {
             const currentValue = holdingCurrentValueNgwee(holding);

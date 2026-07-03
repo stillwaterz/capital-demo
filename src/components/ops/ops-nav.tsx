@@ -15,6 +15,7 @@ import {
   Gauge,
   FileText,
   ClipboardCheck,
+  ListChecks,
   type LucideIcon,
 } from "lucide-react";
 
@@ -26,6 +27,7 @@ type OpsLink = {
 
 const OPS_LINKS: readonly OpsLink[] = [
   { href: "/ops", label: "Control Tower", icon: LayoutDashboard },
+  { href: "/ops/orders", label: "Operator Queue", icon: ListChecks },
   { href: "/ops/settlement", label: "Settlement", icon: ArrowLeftRight },
   { href: "/ops/ledger", label: "Ledger", icon: BookOpen },
   { href: "/ops/reconciliation", label: "Reconciliation", icon: Scale },
