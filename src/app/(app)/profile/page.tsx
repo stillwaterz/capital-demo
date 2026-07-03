@@ -9,7 +9,7 @@ import { useUserStore } from "@/lib/store/user";
 import { useCustomerWalletStore } from "@/lib/store/customer-wallet";
 import { FundWalletDialog } from "@/components/fund-wallet-dialog";
 import { formatZMW } from "@/lib/format";
-import { LogOut, User, Phone, Shield, CreditCard, FileText, Wallet } from "lucide-react";
+import { LogOut, User, Phone, Shield, CreditCard, FileText, Wallet, Star, LineChart, ScrollText } from "lucide-react";
 
 const MOCK_PAYMENT_METHODS = [
   { label: "Airtel Money", detail: "+260 9XX XXX XXX", active: true },
@@ -91,6 +91,24 @@ export default function ProfilePage() {
       </Card>
 
       <FundWalletDialog open={fundOpen} onClose={() => setFundOpen(false)} />
+
+      {/* Your tools */}
+      <Card className="border border-brand-ink/10">
+        <CardContent className="py-3 px-2">
+          <a href="/portfolio" className="flex items-center gap-3 px-3 py-3 rounded-lg text-sm hover:bg-muted transition-colors">
+            <LineChart size={16} className="text-brand-green" />
+            <span className="flex-1">Portfolio and gains</span>
+          </a>
+          <a href="/watchlist" className="flex items-center gap-3 px-3 py-3 rounded-lg text-sm hover:bg-muted transition-colors">
+            <Star size={16} className="text-brand-green" />
+            <span className="flex-1">Watchlist, alerts and auto-invest</span>
+          </a>
+          <a href="/notes" className="flex items-center gap-3 px-3 py-3 rounded-lg text-sm hover:bg-muted transition-colors">
+            <ScrollText size={16} className="text-brand-green" />
+            <span className="flex-1">Contract notes</span>
+          </a>
+        </CardContent>
+      </Card>
 
       {/* Display name */}
       <Card className="border border-brand-ink/10">

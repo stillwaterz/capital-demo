@@ -53,3 +53,24 @@ export function holdingPnLPercent(holding: EquityHolding): number {
     ? 0
     : ((holdingCurrentValueNgwee(holding) - cost) / cost) * 100;
 }
+
+/** Absolute gain or loss on a holding, in ngwee. */
+export function holdingPnLNgwee(holding: EquityHolding): number {
+  return holdingCurrentValueNgwee(holding) - holdingCostNgwee(holding);
+}
+
+/** Total cost basis across the portfolio, in ngwee. */
+export function portfolioCostNgwee(portfolio: Portfolio): number {
+  return portfolio.equities.reduce((sum, h) => sum + holdingCostNgwee(h), 0);
+}
+
+/** Total gain or loss across the portfolio, in ngwee. */
+export function portfolioPnLNgwee(portfolio: Portfolio): number {
+  return portfolioTotalNgwee(portfolio) - portfolioCostNgwee(portfolio);
+}
+
+/** Total gain or loss across the portfolio, as a percentage. */
+export function portfolioPnLPercent(portfolio: Portfolio): number {
+  const cost = portfolioCostNgwee(portfolio);
+  return cost === 0 ? 0 : (portfolioPnLNgwee(portfolio) / cost) * 100;
+}
