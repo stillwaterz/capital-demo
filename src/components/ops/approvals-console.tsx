@@ -40,6 +40,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
   EmptyState,
+  OpsCountBadge,
   OpsPage,
   PageHeading,
   SectionCard,
@@ -270,11 +271,7 @@ export function ApprovalsConsole() {
         <TabsList>
           <TabsTrigger value="pending">
             Pending
-            {pending.length > 0 ? (
-              <span className="ml-1.5 inline-flex size-4 items-center justify-center rounded-full bg-amber-500 text-[10px] font-semibold text-white">
-                {pending.length}
-              </span>
-            ) : null}
+            <OpsCountBadge count={pending.length} className="ml-1.5" />
           </TabsTrigger>
           <TabsTrigger value="decided">Decided</TabsTrigger>
           <TabsTrigger value="audit">Audit log</TabsTrigger>

@@ -29,6 +29,7 @@ import {
 import { AdvanceClock } from "@/components/ops/advance-clock";
 import {
   EmptyState,
+  OpsCountBadge,
   OpsPage,
   PageHeading,
   SectionCard,
@@ -151,11 +152,7 @@ export function ReconciliationBoard() {
         <TabsList>
           <TabsTrigger value="breaks">
             All breaks
-            {breaks.length > 0 ? (
-              <span className="ml-1.5 inline-flex size-4 items-center justify-center rounded-full bg-destructive text-[10px] font-semibold text-destructive-foreground">
-                {breaks.length}
-              </span>
-            ) : null}
+            <OpsCountBadge count={breaks.length} className="ml-1.5" />
           </TabsTrigger>
           <TabsTrigger value="cash">Cash</TabsTrigger>
           <TabsTrigger value="position">Position</TabsTrigger>

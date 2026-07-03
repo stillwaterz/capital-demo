@@ -23,6 +23,7 @@ import {
   useOpsNavCounts,
   type OpsNavCounts,
 } from "@/lib/hooks/use-ops-nav-counts";
+import { OpsCountBadge } from "@/components/ops/ops-kit";
 
 type CountKey = keyof Pick<
   OpsNavCounts,
@@ -127,15 +128,6 @@ function isActive(pathname: string, href: string): boolean {
   return pathname.startsWith(href);
 }
 
-function NavBadge({ count }: { count: number }) {
-  if (count <= 0) return null;
-  return (
-    <span className="ml-auto inline-flex min-w-5 items-center justify-center rounded-full bg-destructive px-1.5 py-0.5 text-[10px] font-semibold tabular-nums text-destructive-foreground">
-      {count > 99 ? "99+" : count}
-    </span>
-  );
-}
-
 export function OpsNav({
   className,
   onNavigate,
@@ -172,7 +164,11 @@ export function OpsNav({
                 >
                   <Icon size={17} strokeWidth={active ? 2.4 : 2} />
                   <span className="truncate">{label}</span>
-                  <NavBadge count={badgeCount} />
+                  <OpsCountBadge
+                    count={badgeCount}
+                    onActiveSurface={active}
+                    className="ml-auto"
+                  />
                 </Link>
               );
             })}

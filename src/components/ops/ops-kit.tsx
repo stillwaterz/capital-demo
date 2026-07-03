@@ -284,6 +284,37 @@ export function PriorityItem({
   return content;
 }
 
+/**
+ * Compact count pill for nav items and tabs. Uses explicit colours so counts
+ * stay readable on both the green active nav state and muted inactive links.
+ */
+export function OpsCountBadge({
+  count,
+  onActiveSurface = false,
+  className,
+}: {
+  count: number;
+  /** When true, the badge sits on the brand-green active nav row. */
+  onActiveSurface?: boolean;
+  className?: string;
+}) {
+  if (count <= 0) return null;
+  const label = count > 99 ? "99+" : String(count);
+  return (
+    <span
+      className={cn(
+        "inline-flex min-w-5 shrink-0 items-center justify-center rounded-full px-1.5 py-0.5 text-[10px] font-semibold leading-none tabular-nums",
+        onActiveSurface
+          ? "bg-brand-cream text-brand-green ring-1 ring-brand-cream/60"
+          : "bg-brand-copper/15 text-[#8B4A1F] ring-1 ring-brand-copper/35 dark:bg-amber-500/20 dark:text-amber-100 dark:ring-amber-500/40",
+        className
+      )}
+    >
+      {label}
+    </span>
+  );
+}
+
 export function EmptyState({
   icon: Icon,
   title,

@@ -39,6 +39,7 @@ import {
 import { AdvanceClock } from "@/components/ops/advance-clock";
 import {
   EmptyState,
+  OpsCountBadge,
   OpsPage,
   PageHeading,
   SectionCard,
@@ -138,11 +139,7 @@ export function SettlementBoard() {
           <TabsTrigger value="batches">Batches</TabsTrigger>
           <TabsTrigger value="fails">
             Fail queue
-            {fails.length > 0 ? (
-              <span className="ml-1.5 inline-flex size-4 items-center justify-center rounded-full bg-destructive text-[10px] font-semibold text-destructive-foreground">
-                {fails.length}
-              </span>
-            ) : null}
+            <OpsCountBadge count={fails.length} className="ml-1.5" />
           </TabsTrigger>
         </TabsList>
 
