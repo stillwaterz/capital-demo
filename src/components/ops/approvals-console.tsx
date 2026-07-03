@@ -184,6 +184,7 @@ function ProposalCard({
 export function ApprovalsConsole() {
   const [mounted, setMounted] = useState(false);
   const [role, setRole] = useState<StaffRole>("OPS");
+  const [tab, setTab] = useState("pending");
   const proposals = useOpsGovernanceStore((s) => s.proposals);
   const audit = useOpsGovernanceStore((s) => s.audit);
   const reset = useOpsGovernanceStore((s) => s.reset);
@@ -225,6 +226,7 @@ export function ApprovalsConsole() {
           value={String(pending.length)}
           tone={pending.length > 0 ? "warning" : "neutral"}
           icon={ClipboardList}
+          onClick={() => setTab("pending")}
         />
         <StatCard
           label="Guardrail blocked"
@@ -232,17 +234,20 @@ export function ApprovalsConsole() {
           tone={blocked > 0 ? "danger" : "positive"}
           hint="Cannot be approved"
           icon={ShieldAlert}
+          onClick={() => setTab("pending")}
         />
         <StatCard
           label="Approved"
           value={String(approved.length)}
           tone="positive"
           icon={CheckCircle2}
+          onClick={() => setTab("decided")}
         />
         <StatCard
           label="Rejected"
           value={String(rejected.length)}
           icon={XCircle}
+          onClick={() => setTab("decided")}
         />
       </StatGrid>
 
@@ -267,7 +272,7 @@ export function ApprovalsConsole() {
         </CardContent>
       </Card>
 
-      <Tabs defaultValue="pending">
+      <Tabs value={tab} onValueChange={(value) => setTab(String(value))}>
         <TabsList>
           <TabsTrigger value="pending">
             Pending

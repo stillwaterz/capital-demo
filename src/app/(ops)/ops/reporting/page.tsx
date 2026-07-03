@@ -4,7 +4,6 @@ import {
   FileText,
   Send,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -14,6 +13,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
+  ActionLink,
   AlertBanner,
   OpsPage,
   PageHeading,
@@ -76,6 +76,7 @@ export default function ReportingPage() {
       </StatGrid>
 
       {overdue.length > 0 ? (
+        <div id="overdue-returns" className="scroll-mt-24">
         <SectionCard
           title="Overdue and due now"
           icon={AlertTriangle}
@@ -96,6 +97,7 @@ export default function ReportingPage() {
             Submitting a return routes to approvals for a checker before it is marked filed.
           </p>
         </SectionCard>
+        </div>
       ) : null}
 
       {summary.overdue > 0 ? (
@@ -104,11 +106,7 @@ export default function ReportingPage() {
           icon={AlertTriangle}
           title={`${summary.overdue} overdue return${summary.overdue === 1 ? "" : "s"}`}
           description="File or extend before the regulator deadline to stay compliant."
-          action={
-            <Button variant="outline" size="sm">
-              Review overdue
-            </Button>
-          }
+          action={<ActionLink href="#overdue-returns">Review overdue</ActionLink>}
         />
       ) : null}
 

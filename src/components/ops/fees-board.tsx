@@ -1,9 +1,10 @@
 "use client";
 
-import { Calendar, Coins, FileText, Receipt } from "lucide-react";
+import { useState } from "react";
+import { Calendar, Coins, FileText, Landmark, Receipt } from "lucide-react";
 import { useOpsClockStore } from "@/lib/store/ops-clock";
 import { formatZMW, formatDateZM } from "@/lib/format";
-import type { RemittanceStatus } from "@/lib/ops/types";
+import type { FeeRun, RemittanceStatus, WhtRemittance } from "@/lib/ops/types";
 import {
   COMMISSION_SCHEDULE,
   feesSummary,
@@ -20,6 +21,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { AdvanceClock } from "@/components/ops/advance-clock";
+import { OpsDetailSheet } from "@/components/ops/ops-detail-sheet";
+import { ProposeActionButton } from "@/components/ops/propose-action-button";
 import {
   EmptyState,
   OpsPage,
@@ -47,6 +50,11 @@ export function FeesBoard() {
   const remittances = listWhtRemittances(businessDate);
   const summary = feesSummary(businessDate);
 
+  const [tab, setTab] = useState("runs");
+  const [selectedRun, setSelectedRun] = useState<FeeRun | null>(null);
+  const [selectedRemittance, setSelectedRemittance] =
+    useState<WhtRemittance | null>(null);
+
   return (
     <OpsPage>
       <PageHeading
@@ -56,7 +64,12 @@ export function FeesBoard() {
       />
 
       <StatGrid>
-        <StatCard label="Fee runs" value={String(summary.feeRunCount)} icon={Receipt} />
+        <StatCard
+          label="Fee runs"
+          value={String(summary.feeRunCount)}
+          icon={Receipt}
+          onClick={() => setTab("runs")}
+        />
         <StatCard
           label="Fees captured"
           value={formatZMW(summary.totalFeesNgwee)}
@@ -69,15 +82,17 @@ export function FeesBoard() {
           tone={summary.whtPayableNgwee > 0 ? "warning" : "neutral"}
           hint="Owed to ZRA"
           icon={FileText}
+          onClick={() => setTab("wht")}
         />
         <StatCard
           label="Open periods"
           value={String(summary.remittanceCount)}
           icon={Calendar}
+          onClick={() => setTab("wht")}
         />
       </StatGrid>
 
-      <Tabs defaultValue="runs">
+      <Tabs value={tab} onValueChange={setTab}>
         <TabsList>
           <TabsTrigger value="runs">Fee runs</TabsTrigger>
           <TabsTrigger value="schedule">Schedule</TabsTrigger>
@@ -105,7 +120,11 @@ export function FeesBoard() {
                 </TableHeader>
                 <TableBody>
                   {feeRuns.map((run) => (
-                    <TableRow key={run.id}>
+                    <TableRow
+                      key={run.id}
+                      onClick={() => setSelectedRun(run)}
+                      className="cursor-pointer"
+                    >
                       <TableCell className="tabular-nums">
                         {formatDateZM(run.date)}
                       </TableCell>
@@ -184,11 +203,16 @@ export function FeesBoard() {
                     <TableHead className="text-right">Amount</TableHead>
                     <TableHead>Due date</TableHead>
                     <TableHead>Status</TableHead>
+                    <TableHead className="text-right">Action</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {remittances.map((row) => (
-                    <TableRow key={row.id}>
+                    <TableRow
+                      key={row.id}
+                      onClick={() => setSelectedRemittance(row)}
+                      className="cursor-pointer"
+                    >
                       <TableCell className="font-medium">{row.period}</TableCell>
                       <TableCell className="text-right font-medium tabular-nums">
                         {formatZMW(row.amountNgwee)}
@@ -201,6 +225,20 @@ export function FeesBoard() {
                           {row.status}
                         </ToneBadge>
                       </TableCell>
+                      <TableCell
+                        className="text-right"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {row.status === "REMITTED" ? null : (
+                          <ProposeActionButton
+                            kind="REMIT_WHT"
+                            summary={`Remit ${formatZMW(row.amountNgwee)} withholding tax for ${row.period} to ZRA`}
+                            targetRef={row.id}
+                            label="Remit to ZRA"
+                            icon={Landmark}
+                          />
+                        )}
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -209,6 +247,101 @@ export function FeesBoard() {
           </SectionCard>
         </TabsContent>
       </Tabs>
+
+      <OpsDetailSheet
+        open={selectedRun !== null}
+        onOpenChange={(open) => {
+          if (!open) setSelectedRun(null);
+        }}
+        title={selectedRun ? selectedRun.type : ""}
+        subtitle={
+          selectedRun
+            ? `Fee run for ${formatDateZM(selectedRun.date)}`
+            : undefined
+        }
+        badge={
+          selectedRun ? (
+            <ToneBadge
+              tone={selectedRun.postedToLedger ? "positive" : "warning"}
+            >
+              {selectedRun.postedToLedger ? "Posted" : "Pending"}
+            </ToneBadge>
+          ) : undefined
+        }
+        fields={
+          selectedRun
+            ? [
+                { label: "Run id", value: selectedRun.id, mono: true },
+                { label: "Date", value: formatDateZM(selectedRun.date) },
+                { label: "Type", value: selectedRun.type },
+                {
+                  label: "Items",
+                  value: String(selectedRun.itemCount),
+                  mono: true,
+                },
+                {
+                  label: "Total captured",
+                  value: formatZMW(selectedRun.totalNgwee),
+                  mono: true,
+                },
+                {
+                  label: "Status",
+                  value: selectedRun.postedToLedger ? "Posted" : "Pending",
+                },
+              ]
+            : []
+        }
+      />
+
+      <OpsDetailSheet
+        open={selectedRemittance !== null}
+        onOpenChange={(open) => {
+          if (!open) setSelectedRemittance(null);
+        }}
+        title={selectedRemittance ? selectedRemittance.period : ""}
+        subtitle={
+          selectedRemittance
+            ? "Withholding tax remittance to ZRA"
+            : undefined
+        }
+        badge={
+          selectedRemittance ? (
+            <ToneBadge tone={remittanceTone(selectedRemittance.status)}>
+              {selectedRemittance.status}
+            </ToneBadge>
+          ) : undefined
+        }
+        fields={
+          selectedRemittance
+            ? [
+                { label: "Period", value: selectedRemittance.period },
+                {
+                  label: "Amount payable",
+                  value: formatZMW(selectedRemittance.amountNgwee),
+                  mono: true,
+                },
+                {
+                  label: "Due date",
+                  value: formatDateZM(selectedRemittance.dueDate),
+                  mono: true,
+                },
+                { label: "Status", value: selectedRemittance.status },
+              ]
+            : []
+        }
+        footer={
+          selectedRemittance && selectedRemittance.status !== "REMITTED" ? (
+            <ProposeActionButton
+              kind="REMIT_WHT"
+              summary={`Remit ${formatZMW(selectedRemittance.amountNgwee)} withholding tax for ${selectedRemittance.period} to ZRA`}
+              targetRef={selectedRemittance.id}
+              label="Remit to ZRA"
+              icon={Landmark}
+              size="sm"
+            />
+          ) : undefined
+        }
+      />
     </OpsPage>
   );
 }

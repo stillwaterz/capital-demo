@@ -5,7 +5,6 @@ import {
   RefreshCw,
   UserCheck,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -22,6 +21,7 @@ import {
   StatGrid,
 } from "@/components/ops/ops-kit";
 import { KycStatusBadge, TierBadge } from "@/components/ops/ops-badges";
+import { ProposeActionButton } from "@/components/ops/propose-action-button";
 import {
   KYC_TIER_SPECS,
   getOnboardingQueue,
@@ -150,9 +150,13 @@ export default function KycPage() {
                   {formatDateZM(item.submittedAt)}
                 </TableCell>
                 <TableCell className="text-right">
-                  <Button variant="outline" size="xs">
-                    Approve
-                  </Button>
+                  <ProposeActionButton
+                    kind="TIER_UPGRADE"
+                    summary={`Approve KYC for ${item.clientName} (${item.currentTier} to ${item.requestedTier})`}
+                    targetRef={item.id}
+                    label="Approve"
+                    iconName="check"
+                  />
                 </TableCell>
               </TableRow>
             ))}
@@ -180,6 +184,15 @@ export default function KycPage() {
                   <TierFlow item={item} />
                 </div>
                 <p className="pt-2 text-sm text-muted-foreground">{item.note}</p>
+                <div className="pt-3">
+                  <ProposeActionButton
+                    kind="TIER_UPGRADE"
+                    summary={`Approve tier upgrade for ${item.clientName} (${item.currentTier} to ${item.requestedTier})`}
+                    targetRef={item.id}
+                    label="Approve upgrade"
+                    iconName="check"
+                  />
+                </div>
               </div>
             ))}
           </div>

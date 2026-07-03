@@ -4,7 +4,6 @@ import {
   PieChart,
   Power,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
   Table,
@@ -23,6 +22,7 @@ import {
   StatGrid,
 } from "@/components/ops/ops-kit";
 import { BreachBadge, KillSwitchBadge } from "@/components/ops/ops-badges";
+import { ProposeActionButton } from "@/components/ops/propose-action-button";
 import {
   EXPOSURE_ROWS,
   RISK_LIMITS,
@@ -98,10 +98,35 @@ export default function RiskPage() {
             </span>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="destructive" size="sm">
-              {killSwitch.mode === "LIVE" ? "Halt all trading" : "Resume trading"}
-            </Button>
-            <span className="text-xs text-muted-foreground">Routes to approvals</span>
+            <ProposeActionButton
+              kind="KILL_SWITCH"
+              summary={
+                killSwitch.mode === "LIVE"
+                  ? "Halt all trading via the kill switch"
+                  : "Resume trading and release the kill switch"
+              }
+              targetRef={`KILL-${killSwitch.scope}`}
+              label={
+                killSwitch.mode === "LIVE" ? "Halt all trading" : "Resume trading"
+              }
+              iconName="power"
+              variant="destructive"
+              size="sm"
+              confirm={{
+                title:
+                  killSwitch.mode === "LIVE"
+                    ? "Halt all trading?"
+                    : "Resume trading?",
+                body:
+                  killSwitch.mode === "LIVE"
+                    ? "This raises a kill switch proposal for a risk officer to approve. No trading stops until a human checker approves it."
+                    : "This raises a proposal to resume trading for a risk officer to approve.",
+                confirmLabel: "Send to approvals",
+              }}
+            />
+            <span className="text-xs text-muted-foreground">
+              Routes to approvals
+            </span>
           </div>
         </div>
       </SectionCard>

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
   CalendarClock,
   CheckCircle2,
@@ -17,7 +18,10 @@ import {
   corporateActionSummary,
   listAutoRolls,
   listCorporateActions,
+  type CorporateActionView,
 } from "@/lib/ops/corporate-actions";
+import { OpsDetailSheet } from "@/components/ops/ops-detail-sheet";
+import { ProposeActionButton } from "@/components/ops/propose-action-button";
 import {
   Table,
   TableBody,
@@ -59,6 +63,8 @@ export function CorporateActionsBoard() {
   const actions = listCorporateActions(businessDate);
   const autoRolls = listAutoRolls(businessDate);
   const summary = corporateActionSummary(businessDate);
+  const [selectedAction, setSelectedAction] =
+    useState<CorporateActionView | null>(null);
 
   return (
     <OpsPage>
@@ -100,7 +106,8 @@ export function CorporateActionsBoard() {
             {autoRolls.map((roll) => (
               <div
                 key={roll.id}
-                className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-muted/40 px-3 py-2 text-sm"
+                onClick={() => setSelectedAction(roll)}
+                className="flex cursor-pointer flex-wrap items-center justify-between gap-2 rounded-lg bg-muted/40 px-3 py-2 text-sm transition-colors hover:bg-muted/70"
               >
                 <div>
                   <p className="font-medium">
@@ -112,9 +119,22 @@ export function CorporateActionsBoard() {
                     {formatDateZM(roll.payDate)}
                   </p>
                 </div>
-                <ToneBadge tone={statusTone(roll.status)}>
-                  {roll.status === "PROCESSED" ? "Rolled" : "Scheduled"}
-                </ToneBadge>
+                <div className="flex items-center gap-2">
+                  <ToneBadge tone={statusTone(roll.status)}>
+                    {roll.status === "PROCESSED" ? "Rolled" : "Scheduled"}
+                  </ToneBadge>
+                  {roll.status !== "PROCESSED" ? (
+                    <span onClick={(e) => e.stopPropagation()}>
+                      <ProposeActionButton
+                        kind="AUTO_ROLL"
+                        summary={`Auto-roll ${roll.symbol} maturity for ${roll.clientName} into ${roll.rolledIntoSymbol ?? "a fresh bill"}`}
+                        targetRef={roll.id}
+                        label="Propose roll"
+                        icon={RefreshCw}
+                      />
+                    </span>
+                  ) : null}
+                </div>
               </div>
             ))}
           </div>
@@ -141,7 +161,11 @@ export function CorporateActionsBoard() {
           </TableHeader>
           <TableBody>
             {actions.map((action) => (
-              <TableRow key={action.id}>
+              <TableRow
+                key={action.id}
+                onClick={() => setSelectedAction(action)}
+                className="cursor-pointer"
+              >
                 <TableCell>
                   <ToneBadge tone="info">{TYPE_LABELS[action.type]}</ToneBadge>
                 </TableCell>
@@ -169,6 +193,86 @@ export function CorporateActionsBoard() {
           </TableBody>
         </Table>
       </SectionCard>
+
+      <OpsDetailSheet
+        open={selectedAction !== null}
+        onOpenChange={(open) => {
+          if (!open) setSelectedAction(null);
+        }}
+        title={selectedAction ? selectedAction.symbol : ""}
+        subtitle={
+          selectedAction
+            ? `${TYPE_LABELS[selectedAction.type]} for ${selectedAction.clientName}`
+            : undefined
+        }
+        badge={
+          selectedAction ? (
+            <ToneBadge tone={statusTone(selectedAction.status)}>
+              {selectedAction.status}
+            </ToneBadge>
+          ) : undefined
+        }
+        fields={
+          selectedAction
+            ? [
+                { label: "Type", value: TYPE_LABELS[selectedAction.type] },
+                { label: "Instrument", value: selectedAction.symbol },
+                { label: "Client", value: selectedAction.clientName },
+                {
+                  label: "Ex date",
+                  value: formatDateZM(selectedAction.exDate),
+                  mono: true,
+                },
+                {
+                  label: "Pay date",
+                  value: formatDateZM(selectedAction.payDate),
+                  mono: true,
+                },
+                {
+                  label: "Gross",
+                  value: formatZMW(selectedAction.grossNgwee),
+                  mono: true,
+                },
+                {
+                  label: "WHT withheld",
+                  value:
+                    selectedAction.whtNgwee > 0
+                      ? formatZMW(selectedAction.whtNgwee)
+                      : "-",
+                  mono: true,
+                },
+                {
+                  label: selectedAction.isCashToClient
+                    ? "Client credit"
+                    : "Reinvested",
+                  value: formatZMW(selectedAction.netNgwee),
+                  mono: true,
+                },
+                ...(selectedAction.rolledIntoSymbol
+                  ? [
+                      {
+                        label: "Rolls into",
+                        value: selectedAction.rolledIntoSymbol,
+                      },
+                    ]
+                  : []),
+              ]
+            : []
+        }
+        footer={
+          selectedAction &&
+          selectedAction.type === "AUTO_ROLL" &&
+          selectedAction.status !== "PROCESSED" ? (
+            <ProposeActionButton
+              kind="AUTO_ROLL"
+              summary={`Auto-roll ${selectedAction.symbol} maturity for ${selectedAction.clientName} into ${selectedAction.rolledIntoSymbol ?? "a fresh bill"}`}
+              targetRef={selectedAction.id}
+              label="Propose roll"
+              icon={RefreshCw}
+            />
+          ) : undefined
+        }
+      />
     </OpsPage>
   );
 }

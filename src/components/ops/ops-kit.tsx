@@ -83,41 +83,91 @@ export function StatCard({
   hint,
   tone = "neutral",
   icon: Icon,
+  href,
+  onClick,
 }: {
   label: string;
   value: string;
   hint?: string;
   tone?: Tone;
   icon?: LucideIcon;
+  /** When set, the whole card links here. */
+  href?: string;
+  /** When set, the whole card is a button running this handler. */
+  onClick?: () => void;
 }) {
+  const interactive = Boolean(href || onClick);
+  const body = (
+    <CardContent className="space-y-3">
+      <div className="flex items-start justify-between gap-2">
+        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+          {label}
+        </p>
+        {Icon ? (
+          <span
+            className={cn(
+              "inline-flex size-8 shrink-0 items-center justify-center rounded-lg",
+              STAT_ICON_BG[tone]
+            )}
+          >
+            <Icon size={16} strokeWidth={2.2} />
+          </span>
+        ) : null}
+      </div>
+      <p
+        className={cn(
+          "font-display text-2xl font-semibold tabular-nums tracking-tight",
+          STAT_ACCENT[tone]
+        )}
+      >
+        {value}
+      </p>
+      <div className="flex items-center justify-between gap-2">
+        {hint ? (
+          <p className="text-xs text-muted-foreground">{hint}</p>
+        ) : (
+          <span />
+        )}
+        {interactive ? (
+          <ArrowRight
+            size={14}
+            className="shrink-0 text-muted-foreground transition-transform group-hover/stat:translate-x-0.5"
+          />
+        ) : null}
+      </div>
+    </CardContent>
+  );
+
+  const wrapperClass = cn(
+    "group/stat block rounded-xl text-left transition-colors",
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+  );
+  const interactiveCardClass =
+    "overflow-hidden transition-colors group-hover/stat:bg-muted/30 group-hover/stat:ring-brand-green/30";
+
+  if (href) {
+    return (
+      <Link href={href} className={wrapperClass}>
+        <Card size="sm" className={interactiveCardClass}>
+          {body}
+        </Card>
+      </Link>
+    );
+  }
+
+  if (onClick) {
+    return (
+      <button type="button" onClick={onClick} className={cn(wrapperClass, "w-full")}>
+        <Card size="sm" className={interactiveCardClass}>
+          {body}
+        </Card>
+      </button>
+    );
+  }
+
   return (
     <Card size="sm" className="overflow-hidden">
-      <CardContent className="space-y-3">
-        <div className="flex items-start justify-between gap-2">
-          <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-            {label}
-          </p>
-          {Icon ? (
-            <span
-              className={cn(
-                "inline-flex size-8 shrink-0 items-center justify-center rounded-lg",
-                STAT_ICON_BG[tone]
-              )}
-            >
-              <Icon size={16} strokeWidth={2.2} />
-            </span>
-          ) : null}
-        </div>
-        <p
-          className={cn(
-            "font-display text-2xl font-semibold tabular-nums tracking-tight",
-            STAT_ACCENT[tone]
-          )}
-        >
-          {value}
-        </p>
-        {hint ? <p className="text-xs text-muted-foreground">{hint}</p> : null}
-      </CardContent>
+      {body}
     </Card>
   );
 }

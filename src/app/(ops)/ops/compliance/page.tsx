@@ -5,7 +5,6 @@ import {
   Radar,
   Shield,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
   Table,
@@ -34,6 +33,7 @@ import { formatDateZM } from "@/lib/format";
 import { DEMO_TODAY } from "@/lib/ops/clock";
 import { AskAiButton } from "@/components/ops/ask-ai-button";
 import { SurveillancePanel } from "@/components/ops/surveillance-panel";
+import { ProposeActionButton } from "@/components/ops/propose-action-button";
 
 function formatAmount(amountNgwee: number | null): string {
   return amountNgwee === null ? "-" : formatZMW(amountNgwee);
@@ -125,9 +125,17 @@ export default function CompliancePage() {
                   <AlertStatusBadge status={alert.status} />
                 </TableCell>
                 <TableCell className="text-right">
-                  <Button variant="outline" size="xs">
-                    {alert.status === "ESCALATED" ? "File STR" : "Review"}
-                  </Button>
+                  <ProposeActionButton
+                    kind="FILE_STR"
+                    summary={
+                      alert.status === "ESCALATED"
+                        ? `File STR for ${alert.clientName}: ${alert.type}`
+                        : `Review ${alert.type} alert for ${alert.clientName}`
+                    }
+                    targetRef={alert.id}
+                    label={alert.status === "ESCALATED" ? "File STR" : "Review"}
+                    iconName={alert.status === "ESCALATED" ? "file" : "eye"}
+                  />
                 </TableCell>
               </TableRow>
             ))}
@@ -196,9 +204,13 @@ export default function CompliancePage() {
                     {strCase.alertIds.length === 1 ? "" : "s"}
                   </span>
                   {strCase.status === "DRAFT" ? (
-                    <Button variant="outline" size="xs">
-                      File with FIC
-                    </Button>
+                    <ProposeActionButton
+                      kind="FILE_STR"
+                      summary={`File the STR on ${strCase.clientName} with the FIC`}
+                      targetRef={strCase.id}
+                      label="File with FIC"
+                      iconName="file"
+                    />
                   ) : (
                     <span className="text-xs text-muted-foreground">
                       Filed {strCase.filedAt ? formatDateZM(strCase.filedAt) : "-"}

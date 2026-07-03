@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
   AlertTriangle,
   Calendar,
@@ -16,7 +17,9 @@ import {
   listFloatAccounts,
   listFxRates,
   treasuryShortfall,
+  type LiquidityLadderRow,
 } from "@/lib/ops/treasury";
+import type { FloatAccount } from "@/lib/ops/types";
 import {
   Table,
   TableBody,
@@ -26,6 +29,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { AdvanceClock } from "@/components/ops/advance-clock";
+import { OpsDetailSheet } from "@/components/ops/ops-detail-sheet";
+import { ProposeActionButton } from "@/components/ops/propose-action-button";
 import {
   AlertBanner,
   EmptyState,
@@ -48,6 +53,10 @@ export function TreasuryBoard() {
   const ladder = liquidityLadder(businessDate);
   const shortfall = treasuryShortfall(businessDate);
   const fxRates = listFxRates();
+
+  const [selectedRail, setSelectedRail] = useState<FloatAccount | null>(null);
+  const [selectedObligation, setSelectedObligation] =
+    useState<LiquidityLadderRow | null>(null);
 
   return (
     <OpsPage>
@@ -93,7 +102,20 @@ export function TreasuryBoard() {
               : "the next cycle"
           }`}
           description={`Funding need ${formatZMW(shortfall.requiredNgwee)} exceeds available float ${formatZMW(shortfall.availableNgwee)}. Top up ${formatZMW(shortfall.recommendedTopUpNgwee)} to clear it with headroom.`}
-          action={<ToneBadge tone="danger">Action needed</ToneBadge>}
+          action={
+            <ProposeActionButton
+              kind="FUND_FLOAT"
+              summary={`Fund a treasury float top-up of ${formatZMW(shortfall.recommendedTopUpNgwee)} to clear the pre-settlement shortfall`}
+              targetRef="TREASURY-SHORTFALL"
+              label="Fund top-up"
+              icon={Wallet}
+              confirm={{
+                title: "Fund a treasury float top-up",
+                body: `This raises a proposal to top up the treasury float by ${formatZMW(shortfall.recommendedTopUpNgwee)} to clear the pre-settlement shortfall. A checker approves it before any money moves.`,
+                confirmLabel: "Send to approvals",
+              }}
+            />
+          }
         />
       ) : null}
 
@@ -109,7 +131,11 @@ export function TreasuryBoard() {
             </TableHeader>
             <TableBody>
               {accounts.map((account) => (
-                <TableRow key={account.id}>
+                <TableRow
+                  key={account.id}
+                  onClick={() => setSelectedRail(account)}
+                  className="cursor-pointer"
+                >
                   <TableCell className="font-medium">{account.name}</TableCell>
                   <TableCell className="text-right tabular-nums">
                     {formatZMW(account.balanceNgwee)}
@@ -142,7 +168,11 @@ export function TreasuryBoard() {
               </TableHeader>
               <TableBody>
                 {ladder.map((row) => (
-                  <TableRow key={row.settlementDate}>
+                  <TableRow
+                    key={row.settlementDate}
+                    onClick={() => setSelectedObligation(row)}
+                    className="cursor-pointer"
+                  >
                     <TableCell className="font-medium">
                       {formatDateZM(row.settlementDate)}
                     </TableCell>
@@ -196,6 +226,110 @@ export function TreasuryBoard() {
           </TableBody>
         </Table>
       </SectionCard>
+
+      <OpsDetailSheet
+        open={selectedRail !== null}
+        onOpenChange={(open) => {
+          if (!open) setSelectedRail(null);
+        }}
+        title={selectedRail ? selectedRail.name : ""}
+        subtitle={selectedRail ? "Float held on this payment rail" : undefined}
+        badge={
+          selectedRail ? (
+            <ToneBadge
+              tone={
+                selectedRail.balanceNgwee > selectedRail.minBufferNgwee
+                  ? "positive"
+                  : "warning"
+              }
+            >
+              {selectedRail.balanceNgwee > selectedRail.minBufferNgwee
+                ? "Above buffer"
+                : "At buffer"}
+            </ToneBadge>
+          ) : undefined
+        }
+        fields={
+          selectedRail
+            ? [
+                { label: "Rail", value: selectedRail.rail },
+                { label: "Account id", value: selectedRail.id, mono: true },
+                {
+                  label: "Balance",
+                  value: formatZMW(selectedRail.balanceNgwee),
+                  mono: true,
+                },
+                {
+                  label: "Minimum buffer",
+                  value: formatZMW(selectedRail.minBufferNgwee),
+                  mono: true,
+                },
+                {
+                  label: "Deployable",
+                  value: formatZMW(
+                    selectedRail.balanceNgwee - selectedRail.minBufferNgwee
+                  ),
+                  mono: true,
+                },
+              ]
+            : []
+        }
+      />
+
+      <OpsDetailSheet
+        open={selectedObligation !== null}
+        onOpenChange={(open) => {
+          if (!open) setSelectedObligation(null);
+        }}
+        title={
+          selectedObligation
+            ? formatDateZM(selectedObligation.settlementDate)
+            : ""
+        }
+        subtitle={
+          selectedObligation
+            ? "Settlement obligation on the liquidity ladder"
+            : undefined
+        }
+        badge={
+          selectedObligation ? (
+            <ToneBadge tone={selectedObligation.covered ? "positive" : "danger"}>
+              {selectedObligation.covered ? "Covered" : "Short"}
+            </ToneBadge>
+          ) : undefined
+        }
+        fields={
+          selectedObligation
+            ? [
+                {
+                  label: "Settlement date",
+                  value: formatDateZM(selectedObligation.settlementDate),
+                },
+                {
+                  label: "Amount due",
+                  value: formatZMW(selectedObligation.obligationNgwee),
+                  mono: true,
+                },
+                {
+                  label: "Cumulative",
+                  value: formatZMW(selectedObligation.cumulativeNgwee),
+                  mono: true,
+                },
+                { label: "Trades", value: selectedObligation.tradeCount },
+                { label: "Cover status", value: selectedObligation.covered ? "Covered" : "Short" },
+                {
+                  label: "Shortfall",
+                  value: formatZMW(
+                    selectedObligation.covered
+                      ? 0
+                      : selectedObligation.cumulativeNgwee - float.availableNgwee
+                  ),
+                  mono: true,
+                },
+              ]
+            : []
+        }
+      />
     </OpsPage>
   );
 }

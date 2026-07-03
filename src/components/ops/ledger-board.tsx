@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
   BookOpen,
   CheckCircle2,
@@ -17,7 +18,9 @@ import {
   ledgerSummary,
   trialBalance,
   trialBalanceTotals,
+  type ClientSubLedgerRow,
 } from "@/lib/ops/ledger";
+import type { JournalEntry, TrialBalanceRow } from "@/lib/ops/types";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -38,6 +41,13 @@ import {
   StatGrid,
   ToneBadge,
 } from "@/components/ops/ops-kit";
+import { OpsDetailSheet } from "@/components/ops/ops-detail-sheet";
+
+/** The row or card whose detail drawer is currently open, if any. */
+type LedgerDetail =
+  | { kind: "entry"; entry: JournalEntry }
+  | { kind: "account"; row: TrialBalanceRow }
+  | { kind: "client"; row: ClientSubLedgerRow };
 
 export function LedgerBoard() {
   const businessDate = useOpsClockStore((s) => s.businessDate);
@@ -47,6 +57,17 @@ export function LedgerBoard() {
   const segregation = clientMoneySegregation(businessDate);
   const subLedger = clientSubLedger(businessDate);
   const summary = ledgerSummary(businessDate);
+
+  const [tab, setTab] = useState("journal");
+  const [detail, setDetail] = useState<LedgerDetail | null>(null);
+  const selectedEntry = detail?.kind === "entry" ? detail.entry : null;
+  const entryDebitTotalNgwee = selectedEntry
+    ? selectedEntry.lines.reduce((sum, line) => sum + line.debitNgwee, 0)
+    : 0;
+  const entryCreditTotalNgwee = selectedEntry
+    ? selectedEntry.lines.reduce((sum, line) => sum + line.creditNgwee, 0)
+    : 0;
+  const entryBalanced = entryDebitTotalNgwee === entryCreditTotalNgwee;
 
   return (
     <OpsPage>
@@ -61,28 +82,32 @@ export function LedgerBoard() {
           label="Journal entries"
           value={String(summary.entryCount)}
           icon={BookOpen}
+          onClick={() => setTab("journal")}
         />
         <StatCard
           label="Client money"
           value={formatZMW(summary.clientMoneyNgwee)}
           hint="Liability owed to clients"
           icon={Users}
+          onClick={() => setTab("segregation")}
         />
         <StatCard
           label="Fees income"
           value={formatZMW(summary.feesIncomeNgwee)}
           tone="positive"
           icon={TrendingUp}
+          onClick={() => setTab("trial")}
         />
         <StatCard
           label="WHT payable"
           value={formatZMW(summary.whtPayableNgwee)}
           tone={summary.whtPayableNgwee > 0 ? "warning" : "neutral"}
           icon={Receipt}
+          onClick={() => setTab("trial")}
         />
       </StatGrid>
 
-      <Tabs defaultValue="journal">
+      <Tabs value={tab} onValueChange={setTab}>
         <TabsList>
           <TabsTrigger value="journal">Journal</TabsTrigger>
           <TabsTrigger value="trial">Trial balance</TabsTrigger>
@@ -101,7 +126,12 @@ export function LedgerBoard() {
             </SectionCard>
           ) : (
             entries.map((entry) => (
-              <Card key={entry.id} size="sm">
+              <Card
+                key={entry.id}
+                size="sm"
+                onClick={() => setDetail({ kind: "entry", entry })}
+                className="cursor-pointer transition-colors hover:bg-muted/30 hover:ring-foreground/20"
+              >
                 <CardContent className="space-y-2">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <span className="text-sm font-medium">{entry.memo}</span>
@@ -174,7 +204,11 @@ export function LedgerBoard() {
               </TableHeader>
               <TableBody>
                 {rows.map((row) => (
-                  <TableRow key={row.accountId}>
+                  <TableRow
+                    key={row.accountId}
+                    onClick={() => setDetail({ kind: "account", row })}
+                    className="cursor-pointer"
+                  >
                     <TableCell className="font-medium">{row.accountName}</TableCell>
                     <TableCell className="text-muted-foreground">
                       {row.normalBalance}
@@ -262,7 +296,11 @@ export function LedgerBoard() {
               </TableHeader>
               <TableBody>
                 {subLedger.map((row) => (
-                  <TableRow key={row.clientId}>
+                  <TableRow
+                    key={row.clientId}
+                    onClick={() => setDetail({ kind: "client", row })}
+                    className="cursor-pointer"
+                  >
                     <TableCell className="font-medium">
                       {row.clientName}
                       <span className="ml-1 text-xs text-muted-foreground">
@@ -285,6 +323,157 @@ export function LedgerBoard() {
           </SectionCard>
         </TabsContent>
       </Tabs>
+
+      <OpsDetailSheet
+        open={detail?.kind === "entry"}
+        onOpenChange={(open) => {
+          if (!open) setDetail(null);
+        }}
+        title={selectedEntry ? selectedEntry.memo : ""}
+        subtitle={selectedEntry ? "Journal entry" : undefined}
+        badge={
+          selectedEntry ? (
+            <ToneBadge tone={entryBalanced ? "positive" : "danger"}>
+              {entryBalanced ? (
+                <>
+                  <CheckCircle2 className="mr-1" size={12} />
+                  Balanced
+                </>
+              ) : (
+                "Out of balance"
+              )}
+            </ToneBadge>
+          ) : undefined
+        }
+        fields={
+          selectedEntry
+            ? [
+                { label: "Entry id", value: selectedEntry.id, mono: true },
+                { label: "Date", value: formatDateZM(selectedEntry.date) },
+                { label: "Memo", value: selectedEntry.memo },
+              ]
+            : []
+        }
+      >
+        {selectedEntry ? (
+          <div className="space-y-3">
+            <p className="text-xs font-medium text-muted-foreground">
+              Journal lines
+            </p>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Account</TableHead>
+                  <TableHead className="text-right">Debit</TableHead>
+                  <TableHead className="text-right">Credit</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {selectedEntry.lines.map((line, index) => (
+                  <TableRow key={`${selectedEntry.id}-detail-${index}`}>
+                    <TableCell className="font-medium">
+                      {line.accountId}
+                      {line.clientId ? (
+                        <span className="ml-1 text-xs text-muted-foreground">
+                          ({line.clientId})
+                        </span>
+                      ) : null}
+                    </TableCell>
+                    <TableCell className="text-right tabular-nums">
+                      {line.debitNgwee > 0 ? formatZMW(line.debitNgwee) : "-"}
+                    </TableCell>
+                    <TableCell className="text-right tabular-nums">
+                      {line.creditNgwee > 0 ? formatZMW(line.creditNgwee) : "-"}
+                    </TableCell>
+                  </TableRow>
+                ))}
+                <TableRow className="border-t-2 font-semibold">
+                  <TableCell>Total</TableCell>
+                  <TableCell className="text-right tabular-nums">
+                    {formatZMW(entryDebitTotalNgwee)}
+                  </TableCell>
+                  <TableCell className="text-right tabular-nums">
+                    {formatZMW(entryCreditTotalNgwee)}
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </div>
+        ) : null}
+      </OpsDetailSheet>
+
+      <OpsDetailSheet
+        open={detail?.kind === "account"}
+        onOpenChange={(open) => {
+          if (!open) setDetail(null);
+        }}
+        title={detail?.kind === "account" ? detail.row.accountName : ""}
+        subtitle={
+          detail?.kind === "account" ? "Trial balance account" : undefined
+        }
+        badge={
+          detail?.kind === "account" ? (
+            <ToneBadge tone="neutral">
+              {detail.row.normalBalance} normal
+            </ToneBadge>
+          ) : undefined
+        }
+        fields={
+          detail?.kind === "account"
+            ? [
+                { label: "Account", value: detail.row.accountName },
+                { label: "Account id", value: detail.row.accountId, mono: true },
+                {
+                  label: "Debits",
+                  value: formatZMW(detail.row.totalDebitNgwee),
+                  mono: true,
+                },
+                {
+                  label: "Credits",
+                  value: formatZMW(detail.row.totalCreditNgwee),
+                  mono: true,
+                },
+                {
+                  label: "Balance",
+                  value: formatZMW(detail.row.balanceNgwee),
+                  mono: true,
+                },
+              ]
+            : []
+        }
+      />
+
+      <OpsDetailSheet
+        open={detail?.kind === "client"}
+        onOpenChange={(open) => {
+          if (!open) setDetail(null);
+        }}
+        title={detail?.kind === "client" ? detail.row.clientName : ""}
+        subtitle={detail?.kind === "client" ? detail.row.clientId : undefined}
+        fields={
+          detail?.kind === "client"
+            ? [
+                { label: "Client", value: detail.row.clientName },
+                { label: "Client id", value: detail.row.clientId, mono: true },
+                {
+                  label: "Opening",
+                  value: formatZMW(detail.row.openingNgwee),
+                  mono: true,
+                },
+                {
+                  label: "Movement",
+                  value: formatZMW(detail.row.movementNgwee),
+                  mono: true,
+                },
+                {
+                  label: "Balance",
+                  value: formatZMW(detail.row.balanceNgwee),
+                  mono: true,
+                },
+              ]
+            : []
+        }
+      />
     </OpsPage>
   );
 }

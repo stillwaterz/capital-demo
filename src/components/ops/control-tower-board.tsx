@@ -89,24 +89,28 @@ export function ControlTowerBoard() {
           hint={`${orders.length} from customer app`}
           icon={Layers}
           tone="brand"
+          href="/ops/settlement"
         />
         <StatCard
           label="Settlement fails"
           value={String(settlement.failCount)}
           tone={settlement.failCount > 0 ? "danger" : "positive"}
           icon={AlertTriangle}
+          href="/ops/settlement"
         />
         <StatCard
           label="Open recon breaks"
           value={String(recon.openBreaks)}
           tone={recon.openBreaks > 0 ? "warning" : "positive"}
           icon={Scale}
+          href="/ops/reconciliation"
         />
         <StatCard
           label="Pending approvals"
           value={String(pendingProposals.length)}
           tone={pendingProposals.length > 0 ? "warning" : "neutral"}
           icon={ClipboardCheck}
+          href="/ops/approvals"
         />
       </StatGrid>
 

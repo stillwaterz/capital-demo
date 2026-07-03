@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import {
   AlertTriangle,
   ArrowDownLeft,
@@ -14,7 +14,7 @@ import { useOpsClockStore } from "@/lib/store/ops-clock";
 import { useCustomerOrdersStore } from "@/lib/store/customer-orders";
 import { customerOrderToTrade } from "@/lib/ops/customer-trades";
 import { formatZMW, formatDateZM } from "@/lib/format";
-import type { SettlementStatus, TradeState } from "@/lib/ops/types";
+import type { SettlementStatus, Trade, TradeState } from "@/lib/ops/types";
 import {
   groupTradesByState,
   TRADE_STATE_ORDER,
@@ -48,6 +48,10 @@ import {
   ToneBadge,
 } from "@/components/ops/ops-kit";
 import { AskAiButton } from "@/components/ops/ask-ai-button";
+import {
+  OpsDetailSheet,
+  type DetailField,
+} from "@/components/ops/ops-detail-sheet";
 
 const STATE_LABELS: Record<TradeState, string> = {
   NEW: "New",
@@ -98,6 +102,50 @@ export function SettlementBoard() {
   const fails = listSettlementFails(businessDate, extraTrades);
   const summary = settlementSummary(businessDate, extraTrades);
 
+  const [tab, setTab] = useState("lifecycle");
+  const [selectedTrade, setSelectedTrade] = useState<Trade | null>(null);
+
+  const tradesById = useMemo(() => {
+    const map = new Map<string, Trade>();
+    for (const state of TRADE_STATE_ORDER) {
+      for (const trade of grouped[state]) {
+        map.set(trade.id, trade);
+      }
+    }
+    return map;
+  }, [grouped]);
+
+  const detailFields: DetailField[] = selectedTrade
+    ? [
+        { label: "Side", value: selectedTrade.side },
+        { label: "Client", value: selectedTrade.clientName },
+        {
+          label: "Quantity",
+          value: selectedTrade.quantity.toLocaleString("en-US"),
+          mono: true,
+        },
+        {
+          label: "Price",
+          value: formatZMW(selectedTrade.priceNgwee),
+          mono: true,
+        },
+        {
+          label: "Net consideration",
+          value: formatZMW(selectedTrade.netNgwee),
+          mono: true,
+        },
+        { label: "Status", value: STATE_LABELS[selectedTrade.state] },
+        ...(selectedTrade.failReason
+          ? [
+              {
+                label: "Fail reason",
+                value: selectedTrade.failReason,
+              } satisfies DetailField,
+            ]
+          : []),
+      ]
+    : [];
+
   return (
     <OpsPage>
       <PageHeading
@@ -111,6 +159,7 @@ export function SettlementBoard() {
           label="Settlement batches"
           value={String(summary.batchCount)}
           icon={Package}
+          onClick={() => setTab("batches")}
         />
         <StatCard
           label="Pending to fund"
@@ -118,22 +167,25 @@ export function SettlementBoard() {
           tone={summary.pendingFundingNgwee > 0 ? "warning" : "neutral"}
           hint="Net cash on open batches"
           icon={Wallet}
+          onClick={() => setTab("batches")}
         />
         <StatCard
           label="Settled batches"
           value={String(summary.settledCount)}
           tone="positive"
           icon={CheckCircle2}
+          onClick={() => setTab("batches")}
         />
         <StatCard
           label="Fails"
           value={String(summary.failCount)}
           tone={summary.failCount > 0 ? "danger" : "positive"}
           icon={AlertTriangle}
+          onClick={() => setTab("fails")}
         />
       </StatGrid>
 
-      <Tabs defaultValue="lifecycle">
+      <Tabs value={tab} onValueChange={setTab}>
         <TabsList>
           <TabsTrigger value="lifecycle">Lifecycle</TabsTrigger>
           <TabsTrigger value="batches">Batches</TabsTrigger>
@@ -164,7 +216,12 @@ export function SettlementBoard() {
                       </p>
                     ) : (
                       trades.map((trade) => (
-                        <Card key={trade.id} size="sm">
+                        <Card
+                          key={trade.id}
+                          size="sm"
+                          onClick={() => setSelectedTrade(trade)}
+                          className="cursor-pointer transition-colors hover:bg-muted/40 hover:ring-foreground/20"
+                        >
                           <CardContent className="space-y-1.5">
                             <div className="flex items-center justify-between gap-2">
                               <span className="font-medium">{trade.symbol}</span>
@@ -267,7 +324,11 @@ export function SettlementBoard() {
                       </TableHeader>
                       <TableBody>
                         {batchTrades.map((trade) => (
-                          <TableRow key={trade.id}>
+                          <TableRow
+                            key={trade.id}
+                            onClick={() => setSelectedTrade(trade)}
+                            className="cursor-pointer"
+                          >
                             <TableCell className="font-medium">{trade.id}</TableCell>
                             <TableCell>{trade.clientName}</TableCell>
                             <TableCell>
@@ -321,8 +382,18 @@ export function SettlementBoard() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {fails.map((fail) => (
-                    <TableRow key={fail.tradeId}>
+                  {fails.map((fail) => {
+                    const failTrade = tradesById.get(fail.tradeId);
+                    return (
+                    <TableRow
+                      key={fail.tradeId}
+                      onClick={
+                        failTrade
+                          ? () => setSelectedTrade(failTrade)
+                          : undefined
+                      }
+                      className={failTrade ? "cursor-pointer" : undefined}
+                    >
                       <TableCell className="font-medium">{fail.tradeId}</TableCell>
                       <TableCell>{fail.clientName}</TableCell>
                       <TableCell>
@@ -334,7 +405,10 @@ export function SettlementBoard() {
                       <TableCell className="text-muted-foreground">
                         {fail.reason}
                       </TableCell>
-                      <TableCell className="text-right align-top">
+                      <TableCell
+                        className="text-right align-top"
+                        onClick={(e) => e.stopPropagation()}
+                      >
                         <AskAiButton
                           task="settlement-fail"
                           proposalKind="SETTLE_FAIL"
@@ -348,13 +422,31 @@ export function SettlementBoard() {
                         />
                       </TableCell>
                     </TableRow>
-                  ))}
+                    );
+                  })}
                 </TableBody>
               </Table>
             </SectionCard>
           )}
         </TabsContent>
       </Tabs>
+
+      <OpsDetailSheet
+        open={selectedTrade !== null}
+        onOpenChange={(open) => {
+          if (!open) setSelectedTrade(null);
+        }}
+        title={selectedTrade ? selectedTrade.symbol : ""}
+        subtitle={selectedTrade ? `Trade ${selectedTrade.id}` : undefined}
+        badge={
+          selectedTrade ? (
+            <ToneBadge tone={stateTone(selectedTrade.state)}>
+              {STATE_LABELS[selectedTrade.state]}
+            </ToneBadge>
+          ) : undefined
+        }
+        fields={detailFields}
+      />
     </OpsPage>
   );
 }
