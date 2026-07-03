@@ -24,7 +24,7 @@ import { isSettlementDue, nextSettlementDate } from "./clock";
 const TENANT_ID = "capital-demo";
 
 /** Commission schedule, expressed in basis points of gross consideration. */
-export const EQUITY_BROKERAGE_BPS = 100; // 1.00%
+export const EQUITY_BROKERAGE_BPS = 150; // 1.50% commission (BUILD_SPEC section 5)
 export const EQUITY_LEVY_BPS = 20; // 0.20% combined LuSE and SEC levy
 export const GOVT_BROKERAGE_BPS = 25; // 0.25% on T-bills and bonds
 /** Flat CSD settlement fee per equity trade, in ngwee (ZMW 5.00). */
