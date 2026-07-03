@@ -1,3 +1,4 @@
+import { stripDashes } from "@/lib/ai/sanitize";
 import Anthropic from "@anthropic-ai/sdk";
 
 const VERIFIED_COUNTERS = "ATEL, BATA, BATZ, CEC, CECA, CHIL, KLPT, MFIN, PUMA, REIZ, SCBL, ZAMBEEF, ZAMEFA, ZAFFICO, ZANACO, ZRE, DCZ";
@@ -60,7 +61,7 @@ export async function POST(req: Request): Promise<Response> {
           event.type === "content_block_delta" &&
           event.delta.type === "text_delta"
         ) {
-          await writer.write(encoder.encode(event.delta.text));
+          await writer.write(encoder.encode(stripDashes(event.delta.text)));
         }
       }
     } catch (err) {
