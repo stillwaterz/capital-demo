@@ -1,5 +1,6 @@
 "use client";
 
+import { Calendar, Coins, FileText, Receipt } from "lucide-react";
 import { useOpsClockStore } from "@/lib/store/ops-clock";
 import { formatZMW, formatDateZM } from "@/lib/format";
 import type { RemittanceStatus } from "@/lib/ops/types";
@@ -9,12 +10,6 @@ import {
   listFeeRuns,
   listWhtRemittances,
 } from "@/lib/ops/fees";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Table,
@@ -26,7 +21,10 @@ import {
 } from "@/components/ui/table";
 import { AdvanceClock } from "@/components/ops/advance-clock";
 import {
+  EmptyState,
+  OpsPage,
   PageHeading,
+  SectionCard,
   StatCard,
   StatGrid,
   ToneBadge,
@@ -50,7 +48,7 @@ export function FeesBoard() {
   const summary = feesSummary(businessDate);
 
   return (
-    <div className="space-y-6">
+    <OpsPage>
       <PageHeading
         title="Fees and Tax"
         description="The commission schedule, brokerage, levy and CSD fee runs from settled trades, and the 15% withholding tax register for remittance to ZRA."
@@ -58,21 +56,24 @@ export function FeesBoard() {
       />
 
       <StatGrid>
-        <StatCard label="Fee runs" value={String(summary.feeRunCount)} />
+        <StatCard label="Fee runs" value={String(summary.feeRunCount)} icon={Receipt} />
         <StatCard
           label="Fees captured"
           value={formatZMW(summary.totalFeesNgwee)}
           tone="positive"
+          icon={Coins}
         />
         <StatCard
           label="WHT payable"
           value={formatZMW(summary.whtPayableNgwee)}
           tone={summary.whtPayableNgwee > 0 ? "warning" : "neutral"}
           hint="Owed to ZRA"
+          icon={FileText}
         />
         <StatCard
           label="Open periods"
           value={String(summary.remittanceCount)}
+          icon={Calendar}
         />
       </StatGrid>
 
@@ -84,131 +85,130 @@ export function FeesBoard() {
         </TabsList>
 
         <TabsContent value="runs" className="pt-4">
-          <Card>
-            <CardHeader className="border-b">
-              <CardTitle>Fee runs</CardTitle>
-            </CardHeader>
-            <CardContent className="pt-0">
-              {feeRuns.length === 0 ? (
-                <p className="py-8 text-center text-sm text-muted-foreground">
-                  No fee runs yet. Settle trades to capture fees.
-                </p>
-              ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Date</TableHead>
-                      <TableHead>Type</TableHead>
-                      <TableHead className="text-right">Items</TableHead>
-                      <TableHead className="text-right">Total</TableHead>
-                      <TableHead>Posted</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {feeRuns.map((run) => (
-                      <TableRow key={run.id}>
-                        <TableCell className="tabular-nums">
-                          {formatDateZM(run.date)}
-                        </TableCell>
-                        <TableCell>
-                          <ToneBadge tone="info">{run.type}</ToneBadge>
-                        </TableCell>
-                        <TableCell className="text-right tabular-nums">
-                          {run.itemCount}
-                        </TableCell>
-                        <TableCell className="text-right font-medium tabular-nums">
-                          {formatZMW(run.totalNgwee)}
-                        </TableCell>
-                        <TableCell>
-                          <ToneBadge
-                            tone={run.postedToLedger ? "positive" : "warning"}
-                          >
-                            {run.postedToLedger ? "Posted" : "Pending"}
-                          </ToneBadge>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="schedule" className="pt-4">
-          <Card>
-            <CardHeader className="border-b">
-              <CardTitle>Commission schedule</CardTitle>
-            </CardHeader>
-            <CardContent className="pt-0">
+          <SectionCard title="Fee runs" icon={Receipt} contentClassName={feeRuns.length === 0 ? undefined : "pt-0"}>
+            {feeRuns.length === 0 ? (
+              <EmptyState
+                icon={Receipt}
+                title="No fee runs yet"
+                description="Settle trades to capture brokerage, levy and CSD fees."
+              />
+            ) : (
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Fee</TableHead>
-                    <TableHead>Applies to</TableHead>
-                    <TableHead>Rate</TableHead>
+                    <TableHead>Date</TableHead>
+                    <TableHead>Type</TableHead>
+                    <TableHead className="text-right">Items</TableHead>
+                    <TableHead className="text-right">Total</TableHead>
+                    <TableHead>Posted</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {COMMISSION_SCHEDULE.map((row) => (
-                    <TableRow key={`${row.feeType}-${row.assetClass}`}>
-                      <TableCell className="font-medium">{row.label}</TableCell>
-                      <TableCell className="text-muted-foreground">
-                        {row.assetClass === "ALL" ? "All income" : row.assetClass}
+                  {feeRuns.map((run) => (
+                    <TableRow key={run.id}>
+                      <TableCell className="tabular-nums">
+                        {formatDateZM(run.date)}
                       </TableCell>
-                      <TableCell>{row.rate}</TableCell>
+                      <TableCell>
+                        <ToneBadge tone="info">{run.type}</ToneBadge>
+                      </TableCell>
+                      <TableCell className="text-right tabular-nums">
+                        {run.itemCount}
+                      </TableCell>
+                      <TableCell className="text-right font-medium tabular-nums">
+                        {formatZMW(run.totalNgwee)}
+                      </TableCell>
+                      <TableCell>
+                        <ToneBadge
+                          tone={run.postedToLedger ? "positive" : "warning"}
+                        >
+                          {run.postedToLedger ? "Posted" : "Pending"}
+                        </ToneBadge>
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
-            </CardContent>
-          </Card>
+            )}
+          </SectionCard>
+        </TabsContent>
+
+        <TabsContent value="schedule" className="pt-4">
+          <SectionCard
+            title="Commission schedule"
+            icon={FileText}
+            description="Published fee rates applied on every settled trade."
+            contentClassName="pt-0"
+          >
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Fee</TableHead>
+                  <TableHead>Applies to</TableHead>
+                  <TableHead>Rate</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {COMMISSION_SCHEDULE.map((row) => (
+                  <TableRow key={`${row.feeType}-${row.assetClass}`}>
+                    <TableCell className="font-medium">{row.label}</TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {row.assetClass === "ALL" ? "All income" : row.assetClass}
+                    </TableCell>
+                    <TableCell>{row.rate}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </SectionCard>
         </TabsContent>
 
         <TabsContent value="wht" className="pt-4">
-          <Card>
-            <CardHeader className="border-b">
-              <CardTitle>ZRA withholding tax register</CardTitle>
-            </CardHeader>
-            <CardContent className="pt-0">
-              {remittances.length === 0 ? (
-                <p className="py-8 text-center text-sm text-muted-foreground">
-                  No withholding tax captured yet.
-                </p>
-              ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Period</TableHead>
-                      <TableHead className="text-right">Amount</TableHead>
-                      <TableHead>Due date</TableHead>
-                      <TableHead>Status</TableHead>
+          <SectionCard
+            title="ZRA withholding tax register"
+            icon={FileText}
+            description="15% WHT on dividends and coupons, remitted to ZRA by due date."
+            contentClassName={remittances.length === 0 ? undefined : "pt-0"}
+          >
+            {remittances.length === 0 ? (
+              <EmptyState
+                icon={FileText}
+                title="No withholding tax yet"
+                description="Corporate actions and income events will populate the register."
+              />
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Period</TableHead>
+                    <TableHead className="text-right">Amount</TableHead>
+                    <TableHead>Due date</TableHead>
+                    <TableHead>Status</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {remittances.map((row) => (
+                    <TableRow key={row.id}>
+                      <TableCell className="font-medium">{row.period}</TableCell>
+                      <TableCell className="text-right font-medium tabular-nums">
+                        {formatZMW(row.amountNgwee)}
+                      </TableCell>
+                      <TableCell className="tabular-nums">
+                        {formatDateZM(row.dueDate)}
+                      </TableCell>
+                      <TableCell>
+                        <ToneBadge tone={remittanceTone(row.status)}>
+                          {row.status}
+                        </ToneBadge>
+                      </TableCell>
                     </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {remittances.map((row) => (
-                      <TableRow key={row.id}>
-                        <TableCell className="font-medium">{row.period}</TableCell>
-                        <TableCell className="text-right font-medium tabular-nums">
-                          {formatZMW(row.amountNgwee)}
-                        </TableCell>
-                        <TableCell className="tabular-nums">
-                          {formatDateZM(row.dueDate)}
-                        </TableCell>
-                        <TableCell>
-                          <ToneBadge tone={remittanceTone(row.status)}>
-                            {row.status}
-                          </ToneBadge>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              )}
-            </CardContent>
-          </Card>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+          </SectionCard>
         </TabsContent>
       </Tabs>
-    </div>
+    </OpsPage>
   );
 }

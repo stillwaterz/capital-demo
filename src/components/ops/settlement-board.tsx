@@ -1,7 +1,15 @@
 "use client";
 
 import { useMemo } from "react";
-import { AlertTriangle, ArrowDownLeft, ArrowUpRight } from "lucide-react";
+import {
+  AlertTriangle,
+  ArrowDownLeft,
+  ArrowUpRight,
+  CheckCircle2,
+  Layers,
+  Package,
+  Wallet,
+} from "lucide-react";
 import { useOpsClockStore } from "@/lib/store/ops-clock";
 import { useCustomerOrdersStore } from "@/lib/store/customer-orders";
 import { customerOrderToTrade } from "@/lib/ops/customer-trades";
@@ -18,12 +26,7 @@ import {
   settlementSummary,
   tradesInBatch,
 } from "@/lib/ops/settlement";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Table,
@@ -35,7 +38,10 @@ import {
 } from "@/components/ui/table";
 import { AdvanceClock } from "@/components/ops/advance-clock";
 import {
+  EmptyState,
+  OpsPage,
   PageHeading,
+  SectionCard,
   StatCard,
   StatGrid,
   ToneBadge,
@@ -92,7 +98,7 @@ export function SettlementBoard() {
   const summary = settlementSummary(businessDate, extraTrades);
 
   return (
-    <div className="space-y-6">
+    <OpsPage>
       <PageHeading
         title="Settlement"
         description="Trade lifecycle board, T+1 settlement batches with delivery versus payment legs, and the fail queue. Advance the clock to settle the open batch."
@@ -100,22 +106,29 @@ export function SettlementBoard() {
       />
 
       <StatGrid>
-        <StatCard label="Settlement batches" value={String(summary.batchCount)} />
+        <StatCard
+          label="Settlement batches"
+          value={String(summary.batchCount)}
+          icon={Package}
+        />
         <StatCard
           label="Pending to fund"
           value={formatZMW(summary.pendingFundingNgwee)}
           tone={summary.pendingFundingNgwee > 0 ? "warning" : "neutral"}
           hint="Net cash on open batches"
+          icon={Wallet}
         />
         <StatCard
           label="Settled batches"
           value={String(summary.settledCount)}
           tone="positive"
+          icon={CheckCircle2}
         />
         <StatCard
           label="Fails"
           value={String(summary.failCount)}
           tone={summary.failCount > 0 ? "danger" : "positive"}
+          icon={AlertTriangle}
         />
       </StatGrid>
 
@@ -123,7 +136,14 @@ export function SettlementBoard() {
         <TabsList>
           <TabsTrigger value="lifecycle">Lifecycle</TabsTrigger>
           <TabsTrigger value="batches">Batches</TabsTrigger>
-          <TabsTrigger value="fails">Fail queue</TabsTrigger>
+          <TabsTrigger value="fails">
+            Fail queue
+            {fails.length > 0 ? (
+              <span className="ml-1.5 inline-flex size-4 items-center justify-center rounded-full bg-destructive text-[10px] font-semibold text-destructive-foreground">
+                {fails.length}
+              </span>
+            ) : null}
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="lifecycle" className="pt-4">
@@ -189,148 +209,155 @@ export function SettlementBoard() {
         </TabsContent>
 
         <TabsContent value="batches" className="space-y-4 pt-4">
-          {batches.map((batch) => {
-            const legs = settlementLegs(batch);
-            const batchTrades = tradesInBatch(batch.id, businessDate, extraTrades);
-            return (
-              <Card key={batch.id}>
-                <CardHeader className="border-b">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <CardTitle>
-                      Settlement {formatDateZM(batch.settlementDate)}
-                    </CardTitle>
+          {batches.length === 0 ? (
+            <SectionCard title="Settlement batches" icon={Layers}>
+              <EmptyState
+                icon={Package}
+                title="No batches yet"
+                description="Advance the clock or confirm trades to create settlement batches."
+              />
+            </SectionCard>
+          ) : (
+            batches.map((batch) => {
+              const legs = settlementLegs(batch);
+              const batchTrades = tradesInBatch(batch.id, businessDate, extraTrades);
+              return (
+                <SectionCard
+                  key={batch.id}
+                  title={`Settlement ${formatDateZM(batch.settlementDate)}`}
+                  icon={Package}
+                  action={
                     <ToneBadge tone={statusTone(batch.status)}>
                       {batch.status}
                     </ToneBadge>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4 pt-4">
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    {legs.map((leg) => (
-                      <div
-                        key={leg.kind}
-                        className="flex items-center justify-between rounded-lg bg-muted/40 px-3 py-2"
-                      >
-                        <div className="flex items-center gap-2 text-sm">
-                          {leg.direction === "BUY" ? (
-                            <ArrowUpRight size={16} className="text-amber-600" />
-                          ) : (
-                            <ArrowDownLeft
-                              size={16}
-                              className="text-emerald-600"
-                            />
-                          )}
-                          <span className="font-medium">{leg.label}</span>
+                  }
+                >
+                  <div className="space-y-4">
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      {legs.map((leg) => (
+                        <div
+                          key={leg.kind}
+                          className="flex items-center justify-between rounded-lg bg-muted/40 px-3 py-2"
+                        >
+                          <div className="flex items-center gap-2 text-sm">
+                            {leg.direction === "BUY" ? (
+                              <ArrowUpRight size={16} className="text-amber-600" />
+                            ) : (
+                              <ArrowDownLeft
+                                size={16}
+                                className="text-emerald-600"
+                              />
+                            )}
+                            <span className="font-medium">{leg.label}</span>
+                          </div>
+                          <span className="text-sm font-medium tabular-nums">
+                            {leg.kind === "CASH"
+                              ? formatZMW(leg.value)
+                              : `${leg.value.toLocaleString("en-US")} units`}
+                          </span>
                         </div>
-                        <span className="text-sm font-medium tabular-nums">
-                          {leg.kind === "CASH"
-                            ? formatZMW(leg.value)
-                            : `${leg.value.toLocaleString("en-US")} units`}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Trade</TableHead>
-                        <TableHead>Client</TableHead>
-                        <TableHead>Instrument</TableHead>
-                        <TableHead className="text-right">Net</TableHead>
-                        <TableHead className="text-right">State</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {batchTrades.map((trade) => (
-                        <TableRow key={trade.id}>
-                          <TableCell className="font-medium">{trade.id}</TableCell>
-                          <TableCell>{trade.clientName}</TableCell>
-                          <TableCell>
-                            {trade.side} {trade.symbol}
-                          </TableCell>
-                          <TableCell className="text-right tabular-nums">
-                            {formatZMW(trade.netNgwee)}
-                          </TableCell>
-                          <TableCell className="text-right">
-                            <ToneBadge tone={stateTone(trade.state)}>
-                              {STATE_LABELS[trade.state]}
-                            </ToneBadge>
-                          </TableCell>
-                        </TableRow>
                       ))}
-                    </TableBody>
-                  </Table>
-                </CardContent>
-              </Card>
-            );
-          })}
+                    </div>
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Trade</TableHead>
+                          <TableHead>Client</TableHead>
+                          <TableHead>Instrument</TableHead>
+                          <TableHead className="text-right">Net</TableHead>
+                          <TableHead className="text-right">State</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {batchTrades.map((trade) => (
+                          <TableRow key={trade.id}>
+                            <TableCell className="font-medium">{trade.id}</TableCell>
+                            <TableCell>{trade.clientName}</TableCell>
+                            <TableCell>
+                              {trade.side} {trade.symbol}
+                            </TableCell>
+                            <TableCell className="text-right tabular-nums">
+                              {formatZMW(trade.netNgwee)}
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <ToneBadge tone={stateTone(trade.state)}>
+                                {STATE_LABELS[trade.state]}
+                              </ToneBadge>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                </SectionCard>
+              );
+            })
+          )}
         </TabsContent>
 
         <TabsContent value="fails" className="pt-4">
           {fails.length === 0 ? (
-            <Card>
-              <CardContent className="py-10 text-center text-sm text-muted-foreground">
-                No settlement fails on {formatDateZM(businessDate)}.
-              </CardContent>
-            </Card>
+            <SectionCard title="Fail queue" icon={CheckCircle2}>
+              <EmptyState
+                icon={CheckCircle2}
+                title="No settlement fails"
+                description={`Nothing failed on ${formatDateZM(businessDate)}.`}
+              />
+            </SectionCard>
           ) : (
-            <Card>
-              <CardHeader className="border-b">
-                <CardTitle className="flex items-center gap-2">
-                  <AlertTriangle size={16} className="text-destructive" />
-                  Fail queue
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Trade</TableHead>
-                      <TableHead>Client</TableHead>
-                      <TableHead>Instrument</TableHead>
-                      <TableHead className="text-right">Net</TableHead>
-                      <TableHead>Reason</TableHead>
-                      <TableHead className="text-right">Assist</TableHead>
+            <SectionCard
+              title="Fail queue"
+              icon={AlertTriangle}
+              iconClassName="text-destructive"
+              description="Trades that did not settle. Use AI assist to draft a remediation proposal."
+              contentClassName="pt-0"
+            >
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Trade</TableHead>
+                    <TableHead>Client</TableHead>
+                    <TableHead>Instrument</TableHead>
+                    <TableHead className="text-right">Net</TableHead>
+                    <TableHead>Reason</TableHead>
+                    <TableHead className="text-right">Assist</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {fails.map((fail) => (
+                    <TableRow key={fail.tradeId}>
+                      <TableCell className="font-medium">{fail.tradeId}</TableCell>
+                      <TableCell>{fail.clientName}</TableCell>
+                      <TableCell>
+                        {fail.side} {fail.symbol}
+                      </TableCell>
+                      <TableCell className="text-right tabular-nums">
+                        {formatZMW(fail.netNgwee)}
+                      </TableCell>
+                      <TableCell className="text-muted-foreground">
+                        {fail.reason}
+                      </TableCell>
+                      <TableCell className="text-right align-top">
+                        <AskAiButton
+                          task="settlement-fail"
+                          proposalKind="SETTLE_FAIL"
+                          targetRef={fail.tradeId}
+                          fallbackSummary={`Bridge the cash leg on trade ${fail.tradeId} from treasury float so the batch settles.`}
+                          context={{
+                            subsystem: "Settlement",
+                            businessDate: formatDateZM(businessDate),
+                            facts: { fail, summary },
+                          }}
+                        />
+                      </TableCell>
                     </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {fails.map((fail) => (
-                      <TableRow key={fail.tradeId}>
-                        <TableCell className="font-medium">
-                          {fail.tradeId}
-                        </TableCell>
-                        <TableCell>{fail.clientName}</TableCell>
-                        <TableCell>
-                          {fail.side} {fail.symbol}
-                        </TableCell>
-                        <TableCell className="text-right tabular-nums">
-                          {formatZMW(fail.netNgwee)}
-                        </TableCell>
-                        <TableCell className="text-muted-foreground">
-                          {fail.reason}
-                        </TableCell>
-                        <TableCell className="text-right align-top">
-                          <AskAiButton
-                            task="settlement-fail"
-                            proposalKind="SETTLE_FAIL"
-                            targetRef={fail.tradeId}
-                            fallbackSummary={`Bridge the cash leg on trade ${fail.tradeId} from treasury float so the batch settles.`}
-                            context={{
-                              subsystem: "Settlement",
-                              businessDate: formatDateZM(businessDate),
-                              facts: { fail, summary },
-                            }}
-                          />
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
+                  ))}
+                </TableBody>
+              </Table>
+            </SectionCard>
           )}
         </TabsContent>
       </Tabs>
-    </div>
+    </OpsPage>
   );
 }

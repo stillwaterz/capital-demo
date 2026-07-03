@@ -1,11 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import {
   AlertTriangle,
-  ArrowRight,
   CheckCircle2,
+  ChevronDown,
+  ClipboardCheck,
+  Layers,
+  Scale,
   Shield,
   Wallet,
 } from "lucide-react";
@@ -22,21 +25,25 @@ import { riskSummary } from "@/lib/ops/risk";
 import { regReportingSummary } from "@/lib/ops/reg-reporting";
 import { groupTradesByState } from "@/lib/ops/trades";
 import { formatDateZM, formatZMW } from "@/lib/format";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AdvanceClock } from "@/components/ops/advance-clock";
+import { Button } from "@/components/ui/button";
 import {
+  ActionLink,
+  EmptyState,
+  OpsPage,
   PageHeading,
+  PriorityItem,
+  SectionCard,
   StatCard,
   StatGrid,
   ToneBadge,
 } from "@/components/ops/ops-kit";
+import { cn } from "@/lib/utils";
 
 export function ControlTowerBoard() {
+  const [guideOpen, setGuideOpen] = useState(false);
   const businessDate = useOpsClockStore((s) => s.businessDate);
   const orders = useCustomerOrdersStore((s) => s.orders);
-  // Select the stable array reference from the store, then derive. Filtering
-  // inside the selector returns a new array each render, which makes Zustand v5
-  // (useSyncExternalStore) re-render forever -> "Maximum update depth exceeded".
   const proposals = useOpsGovernanceStore((s) => s.proposals);
   const pendingProposals = useMemo(
     () => proposals.filter((p) => p.status === "PENDING"),
@@ -65,8 +72,10 @@ export function ControlTowerBoard() {
     grouped.CONFIRMED.length +
     grouped.CLEARING.length;
 
+  const openBreaks = breaks.filter((b) => b.status === "OPEN");
+
   return (
-    <div className="space-y-6">
+    <OpsPage>
       <PageHeading
         title="Control Tower"
         description={`Operations snapshot for ${formatDateZM(businessDate)}. Settlement, reconciliation, treasury, compliance and approvals in one view.`}
@@ -78,40 +87,39 @@ export function ControlTowerBoard() {
           label="Active trades"
           value={String(activeTrades)}
           hint={`${orders.length} from customer app`}
+          icon={Layers}
+          tone="brand"
         />
         <StatCard
           label="Settlement fails"
           value={String(settlement.failCount)}
           tone={settlement.failCount > 0 ? "danger" : "positive"}
+          icon={AlertTriangle}
         />
         <StatCard
           label="Open recon breaks"
           value={String(recon.openBreaks)}
           tone={recon.openBreaks > 0 ? "warning" : "positive"}
+          icon={Scale}
         />
         <StatCard
           label="Pending approvals"
           value={String(pendingProposals.length)}
           tone={pendingProposals.length > 0 ? "warning" : "neutral"}
+          icon={ClipboardCheck}
         />
       </StatGrid>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <Card>
-          <CardHeader className="border-b">
-            <CardTitle className="flex items-center gap-2 text-base">
-              <Wallet size={16} className="text-brand-green" />
-              Treasury and settlement
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3 pt-4 text-sm">
-            <div className="flex justify-between">
+        <SectionCard title="Treasury and settlement" icon={Wallet}>
+          <div className="space-y-3 text-sm">
+            <div className="flex justify-between gap-4">
               <span className="text-muted-foreground">Pending funding</span>
               <span className="font-medium tabular-nums">
                 {formatZMW(settlement.pendingFundingNgwee)}
               </span>
             </div>
-            <div className="flex justify-between">
+            <div className="flex justify-between gap-4">
               <span className="text-muted-foreground">Float health</span>
               <ToneBadge tone={!treasury.hasShortfall ? "positive" : "warning"}>
                 {!treasury.hasShortfall ? "Healthy" : "Watch"}
@@ -127,125 +135,107 @@ export function ControlTowerBoard() {
                 No immediate treasury shortfall flagged.
               </p>
             )}
-            <Link
-              href="/ops/settlement"
-              className="inline-flex h-7 items-center gap-1 rounded-lg border border-border bg-background px-2.5 text-sm font-medium hover:bg-muted"
-            >
-              Open settlement
-              <ArrowRight size={14} />
-            </Link>
-          </CardContent>
-        </Card>
+            <ActionLink href="/ops/settlement">Open settlement</ActionLink>
+          </div>
+        </SectionCard>
 
-        <Card>
-          <CardHeader className="border-b">
-            <CardTitle className="flex items-center gap-2 text-base">
-              <Shield size={16} className="text-brand-green" />
-              Compliance and risk
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3 pt-4 text-sm">
-            <div className="flex justify-between">
+        <SectionCard title="Compliance and risk" icon={Shield}>
+          <div className="space-y-3 text-sm">
+            <div className="flex justify-between gap-4">
               <span className="text-muted-foreground">Open AML alerts</span>
               <span className="font-medium">{compliance.openAlerts}</span>
             </div>
-            <div className="flex justify-between">
+            <div className="flex justify-between gap-4">
               <span className="text-muted-foreground">KYC in review</span>
               <span className="font-medium">{kyc.inReview}</span>
             </div>
-            <div className="flex justify-between">
+            <div className="flex justify-between gap-4">
               <span className="text-muted-foreground">Kill switch</span>
               <ToneBadge tone={risk.killSwitchMode === "HALTED" ? "danger" : "positive"}>
                 {risk.killSwitchMode === "HALTED" ? "Engaged" : "Off"}
               </ToneBadge>
             </div>
-            <div className="flex justify-between">
+            <div className="flex justify-between gap-4">
               <span className="text-muted-foreground">Overdue returns</span>
               <span className="font-medium">{reporting.overdue}</span>
             </div>
-            <Link
-              href="/ops/compliance"
-              className="inline-flex h-7 items-center gap-1 rounded-lg border border-border bg-background px-2.5 text-sm font-medium hover:bg-muted"
-            >
-              Open compliance
-              <ArrowRight size={14} />
-            </Link>
-          </CardContent>
-        </Card>
+            <ActionLink href="/ops/compliance">Open compliance</ActionLink>
+          </div>
+        </SectionCard>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-2">
-        <Card>
-          <CardHeader className="border-b">
-            <CardTitle className="flex items-center gap-2 text-base">
-              <AlertTriangle size={16} className="text-destructive" />
-              Priority queue
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2 pt-4">
-            {fails.length === 0 && breaks.length === 0 ? (
-              <div className="flex items-center gap-2 py-4 text-sm text-muted-foreground">
-                <CheckCircle2 size={16} className="text-emerald-600" />
-                No settlement fails or recon breaks on this date.
-              </div>
-            ) : (
-              <>
-                {fails.slice(0, 3).map((fail) => (
-                  <div
-                    key={fail.tradeId}
-                    className="rounded-lg border px-3 py-2 text-sm"
-                  >
-                    <p className="font-medium">
-                      Settlement fail: {fail.tradeId}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {fail.clientName} - {fail.reason}
-                    </p>
-                  </div>
-                ))}
-                {breaks
-                  .filter((b) => b.status === "OPEN")
-                  .slice(0, 2)
-                  .map((brk) => (
-                    <div
-                      key={brk.id}
-                      className="rounded-lg border px-3 py-2 text-sm"
-                    >
-                      <p className="font-medium">Recon break: {brk.id}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {brk.label}
-                        {brk.cause ? ` - ${brk.cause}` : ""}
-                      </p>
-                    </div>
-                  ))}
-              </>
-            )}
-          </CardContent>
-        </Card>
+      <SectionCard
+        title="Priority queue"
+        icon={AlertTriangle}
+        iconClassName="text-destructive"
+      >
+        {fails.length === 0 && openBreaks.length === 0 ? (
+          <EmptyState
+            icon={CheckCircle2}
+            title="Queue clear"
+            description="No settlement fails or recon breaks on this business date."
+          />
+        ) : (
+          <div className="space-y-2">
+            {fails.slice(0, 3).map((fail) => (
+              <PriorityItem
+                key={fail.tradeId}
+                tone="danger"
+                href="/ops/settlement"
+                title={`Settlement fail: ${fail.tradeId}`}
+                detail={`${fail.clientName} - ${fail.reason}`}
+              />
+            ))}
+            {openBreaks.slice(0, 2).map((brk) => (
+              <PriorityItem
+                key={brk.id}
+                tone="warning"
+                href="/ops/reconciliation"
+                title={`Recon break: ${brk.id}`}
+                detail={`${brk.label}${brk.cause ? ` - ${brk.cause}` : ""}`}
+              />
+            ))}
+          </div>
+        )}
+      </SectionCard>
 
-        <Card>
-          <CardHeader className="border-b">
-            <CardTitle className="text-base">Demo walkthrough</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2 pt-4 text-sm text-muted-foreground">
-            <p>
-              1. Place a trade in the customer app, then switch to Operations.
-            </p>
+      <div className="rounded-xl border bg-card/80">
+        <button
+          type="button"
+          onClick={() => setGuideOpen((open) => !open)}
+          className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left text-sm font-medium transition-colors hover:bg-muted/40"
+          aria-expanded={guideOpen}
+        >
+          <span>Demo walkthrough</span>
+          <ChevronDown
+            size={16}
+            className={cn(
+              "shrink-0 text-muted-foreground transition-transform",
+              guideOpen && "rotate-180"
+            )}
+          />
+        </button>
+        {guideOpen ? (
+          <div className="space-y-2 border-t px-4 py-4 text-sm text-muted-foreground">
+            <p>1. Place a trade in the customer app, then switch to Operations.</p>
             <p>2. See it on the settlement board with an App badge.</p>
             <p>3. Advance to T+1 and watch it settle.</p>
             <p>
-              4. Open the ops copilot, send a proposal to approvals and approve
-              as checker.
+              4. Open the ops copilot, send a proposal to approvals and approve as
+              checker.
             </p>
-            <Link
-              href="/ops/approvals"
-              className="inline-flex h-7 items-center rounded-lg border border-border bg-background px-2.5 text-sm font-medium hover:bg-muted mt-2"
+            <Button
+              variant="outline"
+              size="sm"
+              nativeButton={false}
+              render={<Link href="/ops/approvals" />}
+              className="mt-2"
             >
               Go to approvals
-            </Link>
-          </CardContent>
-        </Card>
+            </Button>
+          </div>
+        ) : null}
       </div>
-    </div>
+    </OpsPage>
   );
 }

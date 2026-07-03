@@ -1,7 +1,27 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  AlertTriangle,
+  Gauge,
+  PieChart,
+  Power,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { PageHeading, StatCard } from "@/components/ops/ops-stat";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  AlertBanner,
+  OpsPage,
+  PageHeading,
+  SectionCard,
+  StatCard,
+  StatGrid,
+} from "@/components/ops/ops-kit";
 import { BreachBadge, KillSwitchBadge } from "@/components/ops/ops-badges";
 import {
   EXPOSURE_ROWS,
@@ -30,47 +50,52 @@ export default function RiskPage() {
   const killSwitch = getKillSwitch();
 
   return (
-    <div className="space-y-6">
+    <OpsPage>
       <PageHeading
         title="Risk"
         description="Position and concentration limits, the live exposure book and the trading kill switch."
       />
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <StatGrid>
         <StatCard
           label="Book exposure"
           value={formatZMW(summary.totalBookNgwee)}
           hint="Equities and T-bills"
+          icon={Gauge}
         />
         <StatCard
           label="Limits breached"
-          value={summary.breachedLimits}
+          value={String(summary.breachedLimits)}
           hint={`${summary.totalLimits} monitored`}
-          emphasis={summary.breachedLimits > 0 ? "warn" : "good"}
+          tone={summary.breachedLimits > 0 ? "danger" : "positive"}
+          icon={AlertTriangle}
         />
         <StatCard
           label="Top name"
           value={`${summary.topNameSymbol} ${formatBps(summary.topNameShareBps)}`}
           hint="Largest single holding"
+          icon={PieChart}
         />
         <StatCard
           label="Trading"
           value={killSwitch.label}
-          emphasis={killSwitch.mode === "LIVE" ? "good" : "warn"}
+          tone={killSwitch.mode === "LIVE" ? "positive" : "danger"}
+          icon={Power}
         />
-      </div>
+      </StatGrid>
 
-      <Card>
-        <CardHeader className="flex-row items-center justify-between">
-          <div className="space-y-1">
-            <CardTitle>Trading kill switch</CardTitle>
-            <CardDescription>{killSwitch.reason}</CardDescription>
-          </div>
-          <KillSwitchBadge mode={killSwitch.mode} />
-        </CardHeader>
-        <CardContent className="flex flex-wrap items-center justify-between gap-3">
+      <SectionCard
+        title="Trading kill switch"
+        icon={Power}
+        description={killSwitch.reason}
+        action={<KillSwitchBadge mode={killSwitch.mode} />}
+      >
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="text-sm text-muted-foreground">
-            Scope: <span className="font-medium text-foreground">{killSwitch.scope.replace("_", " ")}</span>
+            Scope:{" "}
+            <span className="font-medium text-foreground">
+              {killSwitch.scope.replace("_", " ")}
+            </span>
           </div>
           <div className="flex items-center gap-2">
             <Button variant="destructive" size="sm">
@@ -78,84 +103,87 @@ export default function RiskPage() {
             </Button>
             <span className="text-xs text-muted-foreground">Routes to approvals</span>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </SectionCard>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Risk limits</CardTitle>
-          <CardDescription>
-            Current book values checked against position, concentration, exposure and VaR limits.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b text-left text-xs uppercase tracking-wide text-muted-foreground">
-                <th className="py-2 pr-3 font-medium">Type</th>
-                <th className="py-2 pr-3 font-medium">Limit</th>
-                <th className="py-2 pr-3 text-right font-medium">Threshold</th>
-                <th className="py-2 pr-3 text-right font-medium">Current</th>
-                <th className="py-2 pl-3 font-medium">Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {RISK_LIMITS.map((limit) => (
-                <tr key={limit.id} className="border-b align-top last:border-0">
-                  <td className="py-3 pr-3">
-                    <Badge variant="outline">{limit.type}</Badge>
-                  </td>
-                  <td className="py-3 pr-3 font-medium">{limit.label}</td>
-                  <td className="py-3 pr-3 text-right whitespace-nowrap tabular-nums">
-                    {formatLimitValue(limit)}
-                  </td>
-                  <td className="py-3 pr-3 text-right whitespace-nowrap tabular-nums">
-                    {formatCurrentValue(limit)}
-                  </td>
-                  <td className="py-3 pl-3">
-                    <BreachBadge breached={limit.breached} />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </CardContent>
-      </Card>
+      {summary.breachedLimits > 0 ? (
+        <AlertBanner
+          tone="warning"
+          icon={AlertTriangle}
+          title={`${summary.breachedLimits} limit${summary.breachedLimits === 1 ? "" : "s"} breached`}
+          description="Review the exposure book and consider halting new orders in the affected names."
+        />
+      ) : null}
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Exposure dashboard</CardTitle>
-          <CardDescription>
-            Net exposure by instrument with each name as a share of the total book.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b text-left text-xs uppercase tracking-wide text-muted-foreground">
-                <th className="py-2 pr-3 font-medium">Symbol</th>
-                <th className="py-2 pr-3 font-medium">Asset class</th>
-                <th className="py-2 pr-3 text-right font-medium">Exposure</th>
-                <th className="py-2 pl-3 text-right font-medium">Book share</th>
-              </tr>
-            </thead>
-            <tbody>
-              {EXPOSURE_ROWS.map((row) => (
-                <tr key={row.symbol} className="border-b last:border-0">
-                  <td className="py-3 pr-3 font-medium">{row.symbol}</td>
-                  <td className="py-3 pr-3 text-muted-foreground">{row.assetClass}</td>
-                  <td className="py-3 pr-3 text-right whitespace-nowrap tabular-nums">
-                    {formatZMW(row.exposureNgwee)}
-                  </td>
-                  <td className="py-3 pl-3 text-right whitespace-nowrap tabular-nums">
-                    {formatBps(row.shareBps)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </CardContent>
-      </Card>
-    </div>
+      <SectionCard
+        title="Risk limits"
+        icon={Gauge}
+        description="Current book values checked against position, concentration, exposure and VaR limits."
+        contentClassName="pt-0"
+      >
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Type</TableHead>
+              <TableHead>Limit</TableHead>
+              <TableHead className="text-right">Threshold</TableHead>
+              <TableHead className="text-right">Current</TableHead>
+              <TableHead>Status</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {RISK_LIMITS.map((limit) => (
+              <TableRow key={limit.id} className="align-top">
+                <TableCell>
+                  <Badge variant="outline">{limit.type}</Badge>
+                </TableCell>
+                <TableCell className="font-medium">{limit.label}</TableCell>
+                <TableCell className="text-right whitespace-nowrap tabular-nums">
+                  {formatLimitValue(limit)}
+                </TableCell>
+                <TableCell className="text-right whitespace-nowrap tabular-nums">
+                  {formatCurrentValue(limit)}
+                </TableCell>
+                <TableCell>
+                  <BreachBadge breached={limit.breached} />
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </SectionCard>
+
+      <SectionCard
+        title="Exposure dashboard"
+        icon={PieChart}
+        description="Net exposure by instrument with each name as a share of the total book."
+        contentClassName="pt-0"
+      >
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Symbol</TableHead>
+              <TableHead>Asset class</TableHead>
+              <TableHead className="text-right">Exposure</TableHead>
+              <TableHead className="text-right">Book share</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {EXPOSURE_ROWS.map((row) => (
+              <TableRow key={row.symbol}>
+                <TableCell className="font-medium">{row.symbol}</TableCell>
+                <TableCell className="text-muted-foreground">{row.assetClass}</TableCell>
+                <TableCell className="text-right whitespace-nowrap tabular-nums">
+                  {formatZMW(row.exposureNgwee)}
+                </TableCell>
+                <TableCell className="text-right whitespace-nowrap tabular-nums">
+                  {formatBps(row.shareBps)}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </SectionCard>
+    </OpsPage>
   );
 }

@@ -1,9 +1,22 @@
 "use client";
 
 import { useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import {
+  CheckCircle2,
+  Coins,
+  Layers,
+  ListOrdered,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { PageHeading, StatCard, StatGrid, ToneBadge } from "@/components/ops/ops-kit";
+import {
+  EmptyState,
+  OpsPage,
+  PageHeading,
+  SectionCard,
+  StatCard,
+  StatGrid,
+  ToneBadge,
+} from "@/components/ops/ops-kit";
 import { formatZMW, formatDateZM } from "@/lib/format";
 import { useCustomerOrdersStore } from "@/lib/store/customer-orders";
 import { useOpsClockStore } from "@/lib/store/ops-clock";
@@ -12,7 +25,6 @@ import { computeSettlementDate } from "@/lib/settlement/engine";
 
 type BlockStage = "staged" | "working" | "filled";
 
-/** Reconcile the ATS confirmation to the staged ticket before notes are issued. */
 function isConfirmationMatched(block: OrderBlock, confirmedQty: number): boolean {
   return confirmedQty === block.aggregateQty;
 }
@@ -51,122 +63,133 @@ export function OperatorQueueBoard() {
   }
 
   function confirmFill(block: OrderBlock) {
-    // The ATS confirms the released quantity. Reconcile before marking filled.
     if (!isConfirmationMatched(block, block.aggregateQty)) return;
     setStages((prev) => ({ ...prev, [block.id]: "filled" }));
   }
 
   return (
-    <div className="space-y-6">
+    <OpsPage>
       <PageHeading
         title="Operator queue"
         description="Retail orders netted into blocks for the LuSE session. Release a block into the ATS, then confirm the fill. Each client is allocated back at the block average price."
       />
 
       <StatGrid>
-        <StatCard label="Staged orders" value={String(orders.length)} />
-        <StatCard label="Blocks" value={String(blocks.length)} tone="brand" />
-        <StatCard label="Filled blocks" value={String(filledCount)} tone="positive" />
+        <StatCard
+          label="Staged orders"
+          value={String(orders.length)}
+          icon={ListOrdered}
+        />
+        <StatCard
+          label="Blocks"
+          value={String(blocks.length)}
+          tone="brand"
+          icon={Layers}
+        />
+        <StatCard
+          label="Filled blocks"
+          value={String(filledCount)}
+          tone="positive"
+          icon={CheckCircle2}
+        />
         <StatCard
           label="Consideration"
           value={formatZMW(totalConsideration)}
+          icon={Coins}
         />
       </StatGrid>
 
       {blocks.length === 0 ? (
-        <Card>
-          <CardContent className="py-10 text-center text-sm text-muted-foreground">
-            No orders staged. Place an order in the customer app to see it netted
-            into a block here.
-          </CardContent>
-        </Card>
+        <SectionCard title="Order blocks" icon={Layers}>
+          <EmptyState
+            icon={Layers}
+            title="No orders staged"
+            description="Place an order in the customer app to see it netted into a block here."
+          />
+        </SectionCard>
       ) : (
         <div className="space-y-4">
           {blocks.map((block) => {
             const stage = stageOf(block.id);
             const settlementDate = computeSettlementDate(businessDate);
             return (
-              <Card key={block.id}>
-                <CardContent className="space-y-4 py-5">
-                  <div className="flex flex-wrap items-center justify-between gap-3">
-                    <div className="flex items-center gap-2">
-                      <span className="font-display text-lg font-semibold">
-                        {block.symbol}
+              <SectionCard
+                key={block.id}
+                title={block.symbol}
+                icon={Layers}
+                action={
+                  <div className="flex flex-wrap items-center gap-2">
+                    <ToneBadge tone={block.side === "BUY" ? "brand" : "danger"}>
+                      {block.side}
+                    </ToneBadge>
+                    <StageBadge stage={stage} />
+                    {stage === "staged" && (
+                      <Button size="sm" onClick={() => release(block.id)}>
+                        Release into ATS
+                      </Button>
+                    )}
+                    {stage === "working" && (
+                      <Button size="sm" onClick={() => confirmFill(block)}>
+                        Confirm ATS fill
+                      </Button>
+                    )}
+                    {stage === "filled" && (
+                      <ToneBadge tone="positive">Reconciled</ToneBadge>
+                    )}
+                  </div>
+                }
+              >
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 text-sm">
+                  <div>
+                    <p className="text-muted-foreground">Aggregate</p>
+                    <p className="tabular-nums">
+                      {block.aggregateQty.toLocaleString()} shares
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground">Avg fill price</p>
+                    <p className="tabular-nums">
+                      {formatZMW(block.avgFillPriceNgwee)}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground">Consideration</p>
+                    <p className="tabular-nums">
+                      {formatZMW(blockConsiderationNgwee(block))}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground">Settles</p>
+                    <p>{formatDateZM(settlementDate)}</p>
+                  </div>
+                </div>
+
+                <div className="mt-4 rounded-lg border border-border">
+                  <div className="grid grid-cols-3 gap-2 px-3 py-2 text-xs font-medium text-muted-foreground">
+                    <span>Client</span>
+                    <span className="text-right">Shares</span>
+                    <span className="text-right">Allocated at avg</span>
+                  </div>
+                  {block.allocations.map((alloc) => (
+                    <div
+                      key={alloc.orderId}
+                      className="grid grid-cols-3 gap-2 border-t border-border px-3 py-2 text-sm"
+                    >
+                      <span>{alloc.clientName}</span>
+                      <span className="text-right tabular-nums">
+                        {alloc.quantity.toLocaleString()}
                       </span>
-                      <ToneBadge tone={block.side === "BUY" ? "brand" : "danger"}>
-                        {block.side}
-                      </ToneBadge>
-                      <StageBadge stage={stage} />
+                      <span className="text-right tabular-nums">
+                        {formatZMW(alloc.considerationNgwee)}
+                      </span>
                     </div>
-                    <div className="flex gap-2">
-                      {stage === "staged" && (
-                        <Button size="sm" onClick={() => release(block.id)}>
-                          Release into ATS
-                        </Button>
-                      )}
-                      {stage === "working" && (
-                        <Button size="sm" onClick={() => confirmFill(block)}>
-                          Confirm ATS fill
-                        </Button>
-                      )}
-                      {stage === "filled" && (
-                        <ToneBadge tone="positive">Reconciled</ToneBadge>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 text-sm">
-                    <div>
-                      <p className="text-muted-foreground">Aggregate</p>
-                      <p className="tabular-nums">
-                        {block.aggregateQty.toLocaleString()} shares
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-muted-foreground">Avg fill price</p>
-                      <p className="tabular-nums">
-                        {formatZMW(block.avgFillPriceNgwee)}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-muted-foreground">Consideration</p>
-                      <p className="tabular-nums">
-                        {formatZMW(blockConsiderationNgwee(block))}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-muted-foreground">Settles</p>
-                      <p>{formatDateZM(settlementDate)}</p>
-                    </div>
-                  </div>
-
-                  <div className="rounded-lg border border-border">
-                    <div className="grid grid-cols-3 gap-2 px-3 py-2 text-xs font-medium text-muted-foreground">
-                      <span>Client</span>
-                      <span className="text-right">Shares</span>
-                      <span className="text-right">Allocated at avg</span>
-                    </div>
-                    {block.allocations.map((alloc) => (
-                      <div
-                        key={alloc.orderId}
-                        className="grid grid-cols-3 gap-2 border-t border-border px-3 py-2 text-sm"
-                      >
-                        <span>{alloc.clientName}</span>
-                        <span className="text-right tabular-nums">
-                          {alloc.quantity.toLocaleString()}
-                        </span>
-                        <span className="text-right tabular-nums">
-                          {formatZMW(alloc.considerationNgwee)}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+                  ))}
+                </div>
+              </SectionCard>
             );
           })}
         </div>
       )}
-    </div>
+    </OpsPage>
   );
 }

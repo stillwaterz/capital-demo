@@ -9,30 +9,30 @@ export function ClockControl() {
   const { businessDate, advanceDay, reset } = useOpsClockStore();
 
   return (
-    <div className="flex items-center gap-2">
-      <div className="hidden sm:flex items-center gap-1.5 text-sm text-muted-foreground">
-        <CalendarClock size={16} className="text-brand-green" />
-        <span className="tabular-nums text-foreground font-medium">
+    <div className="flex items-center gap-1 rounded-lg border bg-background/80 px-1 py-0.5">
+      <div className="hidden items-center gap-1.5 px-1.5 text-xs text-muted-foreground lg:flex">
+        <CalendarClock size={14} className="text-brand-green" />
+        <span className="tabular-nums font-medium text-foreground">
           {formatDateZM(businessDate)}
         </span>
       </div>
       <Button
-        size="sm"
-        variant="default"
+        size="xs"
         onClick={advanceDay}
         className="bg-brand-green text-brand-cream hover:bg-brand-green-light"
       >
-        Advance to T+1
+        <span className="hidden sm:inline">Advance to T+1</span>
+        <span className="sm:hidden">T+1</span>
         <ChevronRight />
       </Button>
       <Button
-        size="icon-sm"
+        size="icon-xs"
         variant="ghost"
         onClick={reset}
         aria-label="Reset business clock"
         title="Reset business clock"
       >
-        <RotateCcw />
+        <RotateCcw size={14} />
       </Button>
     </div>
   );

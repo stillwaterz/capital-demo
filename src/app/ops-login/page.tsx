@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { opsLogin } from "./actions";
 
 type OpsLoginPageProps = {
@@ -26,13 +27,12 @@ export default async function OpsLoginPage({ searchParams }: OpsLoginPageProps) 
             <label className="block text-sm font-medium mb-2" htmlFor="username">
               Username
             </label>
-            <input
+            <Input
               id="username"
               name="username"
               type="text"
               autoComplete="username"
               placeholder="admin"
-              className="w-full px-4 py-3 text-base rounded-lg border border-border bg-background outline-none focus:ring-2 focus:ring-ring/50"
               required
             />
           </div>
@@ -41,13 +41,12 @@ export default async function OpsLoginPage({ searchParams }: OpsLoginPageProps) 
             <label className="block text-sm font-medium mb-2" htmlFor="password">
               Password
             </label>
-            <input
+            <Input
               id="password"
               name="password"
               type="password"
               autoComplete="current-password"
               placeholder="••••••"
-              className="w-full px-4 py-3 text-base rounded-lg border border-border bg-background outline-none focus:ring-2 focus:ring-ring/50"
               required
             />
           </div>

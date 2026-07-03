@@ -1,7 +1,27 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  AlertCircle,
+  AlertTriangle,
+  FileText,
+  Radar,
+  Shield,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { PageHeading, StatCard } from "@/components/ops/ops-stat";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  OpsPage,
+  PageHeading,
+  SectionCard,
+  StatCard,
+  StatGrid,
+} from "@/components/ops/ops-kit";
 import { AlertStatusBadge, SeverityBadge } from "@/components/ops/ops-badges";
 import {
   COMPLIANCE_ALERTS,
@@ -25,83 +45,108 @@ export default function CompliancePage() {
   const strCases = getStrCases();
 
   return (
-    <div className="space-y-6">
+    <OpsPage>
       <PageHeading
         title="Compliance"
         description="AML transaction monitoring, sanctions and PEP screening, and STR cases routed to the Financial Intelligence Centre."
       />
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-        <StatCard label="Open alerts" value={summary.openAlerts} hint={`${summary.totalAlerts} total`} />
-        <StatCard label="Escalated" value={summary.escalatedAlerts} emphasis="warn" />
-        <StatCard label="Critical" value={summary.criticalAlerts} emphasis="warn" />
-        <StatCard label="Screening hits" value={summary.screeningHits} hint="Sanctions and PEP" />
-        <StatCard label="STR cases" value={strCases.length} hint={`${summary.strFiled} filed, ${summary.strDraft} draft`} />
-      </div>
+      <StatGrid columns={5}>
+        <StatCard
+          label="Open alerts"
+          value={String(summary.openAlerts)}
+          hint={`${summary.totalAlerts} total`}
+          icon={AlertTriangle}
+          tone={summary.openAlerts > 0 ? "warning" : "neutral"}
+        />
+        <StatCard
+          label="Escalated"
+          value={String(summary.escalatedAlerts)}
+          tone={summary.escalatedAlerts > 0 ? "danger" : "neutral"}
+          icon={AlertCircle}
+        />
+        <StatCard
+          label="Critical"
+          value={String(summary.criticalAlerts)}
+          tone={summary.criticalAlerts > 0 ? "danger" : "neutral"}
+          icon={AlertTriangle}
+        />
+        <StatCard
+          label="Screening hits"
+          value={String(summary.screeningHits)}
+          hint="Sanctions and PEP"
+          icon={Radar}
+        />
+        <StatCard
+          label="STR cases"
+          value={String(strCases.length)}
+          hint={`${summary.strFiled} filed, ${summary.strDraft} draft`}
+          icon={FileText}
+        />
+      </StatGrid>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Transaction monitoring alerts</CardTitle>
-          <CardDescription>
-            Threshold, velocity and structuring rules over client funding and trading activity.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b text-left text-xs uppercase tracking-wide text-muted-foreground">
-                <th className="py-2 pr-3 font-medium">Type</th>
-                <th className="py-2 pr-3 font-medium">Severity</th>
-                <th className="py-2 pr-3 font-medium">Client</th>
-                <th className="py-2 pr-3 font-medium">Detail</th>
-                <th className="py-2 pr-3 text-right font-medium">Amount</th>
-                <th className="py-2 pr-3 font-medium">Status</th>
-                <th className="py-2 pl-3 text-right font-medium">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {COMPLIANCE_ALERTS.map((alert) => (
-                <tr key={alert.id} className="border-b align-top last:border-0">
-                  <td className="py-3 pr-3">
-                    <Badge variant="outline">{alert.type}</Badge>
-                  </td>
-                  <td className="py-3 pr-3">
-                    <SeverityBadge severity={alert.severity} />
-                  </td>
-                  <td className="py-3 pr-3 whitespace-nowrap font-medium">{alert.clientName}</td>
-                  <td className="max-w-md py-3 pr-3 text-muted-foreground">{alert.description}</td>
-                  <td className="py-3 pr-3 text-right whitespace-nowrap tabular-nums">
-                    {formatAmount(alert.amountNgwee)}
-                  </td>
-                  <td className="py-3 pr-3">
-                    <AlertStatusBadge status={alert.status} />
-                  </td>
-                  <td className="py-3 pl-3 text-right">
-                    <Button variant="outline" size="xs">
-                      {alert.status === "ESCALATED" ? "File STR" : "Review"}
-                    </Button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <p className="pt-3 text-xs text-muted-foreground">
-            Actions route to approvals. A checker confirms before any case state changes.
-          </p>
-        </CardContent>
-      </Card>
+      <SectionCard
+        title="Transaction monitoring alerts"
+        icon={Shield}
+        description="Threshold, velocity and structuring rules over client funding and trading activity."
+        contentClassName="pt-0"
+      >
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Type</TableHead>
+              <TableHead>Severity</TableHead>
+              <TableHead>Client</TableHead>
+              <TableHead>Detail</TableHead>
+              <TableHead className="text-right">Amount</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead className="text-right">Action</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {COMPLIANCE_ALERTS.map((alert) => (
+              <TableRow key={alert.id} className="align-top">
+                <TableCell>
+                  <Badge variant="outline">{alert.type}</Badge>
+                </TableCell>
+                <TableCell>
+                  <SeverityBadge severity={alert.severity} />
+                </TableCell>
+                <TableCell className="whitespace-nowrap font-medium">
+                  {alert.clientName}
+                </TableCell>
+                <TableCell className="max-w-md text-muted-foreground">
+                  {alert.description}
+                </TableCell>
+                <TableCell className="text-right whitespace-nowrap tabular-nums">
+                  {formatAmount(alert.amountNgwee)}
+                </TableCell>
+                <TableCell>
+                  <AlertStatusBadge status={alert.status} />
+                </TableCell>
+                <TableCell className="text-right">
+                  <Button variant="outline" size="xs">
+                    {alert.status === "ESCALATED" ? "File STR" : "Review"}
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+        <p className="pt-3 text-xs text-muted-foreground">
+          Actions route to approvals. A checker confirms before any case state changes.
+        </p>
+      </SectionCard>
 
       <SurveillancePanel />
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Sanctions and PEP hit queue</CardTitle>
-            <CardDescription>
-              Matches against the OFAC, UN, EU and UK consolidated lists and the PEP register.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
+      <div className="grid gap-4 lg:grid-cols-2">
+        <SectionCard
+          title="Sanctions and PEP hit queue"
+          icon={Radar}
+          description="Matches against the OFAC, UN, EU and UK consolidated lists and the PEP register."
+        >
+          <div className="space-y-3">
             {screeningHits.map((hit) => (
               <div key={hit.id} className="rounded-lg border p-3">
                 <div className="flex items-center justify-between gap-2">
@@ -120,17 +165,15 @@ export default function CompliancePage() {
                 </div>
               </div>
             ))}
-          </CardContent>
-        </Card>
+          </div>
+        </SectionCard>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>STR and SAR cases</CardTitle>
-            <CardDescription>
-              Suspicious transaction reports drafted and filed with the FIC.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
+        <SectionCard
+          title="STR and SAR cases"
+          icon={FileText}
+          description="Suspicious transaction reports drafted and filed with the FIC."
+        >
+          <div className="space-y-3">
             {strCases.map((strCase) => (
               <div key={strCase.id} className="rounded-lg border p-3">
                 <div className="flex items-center justify-between gap-2">
@@ -149,7 +192,8 @@ export default function CompliancePage() {
                 <p className="pt-2 text-sm text-muted-foreground">{strCase.narrative}</p>
                 <div className="flex items-center justify-between pt-2">
                   <span className="text-xs text-muted-foreground">
-                    Built from {strCase.alertIds.length} alert{strCase.alertIds.length === 1 ? "" : "s"}
+                    Built from {strCase.alertIds.length} alert
+                    {strCase.alertIds.length === 1 ? "" : "s"}
                   </span>
                   {strCase.status === "DRAFT" ? (
                     <Button variant="outline" size="xs">
@@ -182,9 +226,9 @@ export default function CompliancePage() {
             <p className="text-xs text-muted-foreground">
               Filing an STR routes to approvals for a compliance checker.
             </p>
-          </CardContent>
-        </Card>
+          </div>
+        </SectionCard>
       </div>
-    </div>
+    </OpsPage>
   );
 }

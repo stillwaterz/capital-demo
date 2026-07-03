@@ -1,6 +1,26 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  ArrowUp,
+  Clock,
+  Eye,
+  RefreshCw,
+  UserCheck,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { PageHeading, StatCard } from "@/components/ops/ops-stat";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  OpsPage,
+  PageHeading,
+  SectionCard,
+  StatCard,
+  StatGrid,
+} from "@/components/ops/ops-kit";
 import { KycStatusBadge, TierBadge } from "@/components/ops/ops-badges";
 import {
   KYC_TIER_SPECS,
@@ -33,28 +53,45 @@ export default function KycPage() {
   const refreshDue = getRefreshDue();
 
   return (
-    <div className="space-y-6">
+    <OpsPage>
       <PageHeading
         title="KYC Operations"
         description="Tiered onboarding review under the FIC and DPA Zambia 2021 framework, tier-upgrade requests and periodic refresh reviews."
       />
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-        <StatCard label="In queue" value={onboarding.length} hint={`${summary.total} tracked`} />
-        <StatCard label="Pending" value={summary.pending} />
-        <StatCard label="In review" value={summary.inReview} emphasis="warn" />
-        <StatCard label="Upgrade requests" value={summary.upgradeRequests} />
-        <StatCard label="Refresh due" value={summary.refreshDue} emphasis="warn" />
-      </div>
+      <StatGrid columns={5}>
+        <StatCard
+          label="In queue"
+          value={String(onboarding.length)}
+          hint={`${summary.total} tracked`}
+          icon={UserCheck}
+        />
+        <StatCard label="Pending" value={String(summary.pending)} icon={Clock} />
+        <StatCard
+          label="In review"
+          value={String(summary.inReview)}
+          tone={summary.inReview > 0 ? "warning" : "neutral"}
+          icon={Eye}
+        />
+        <StatCard
+          label="Upgrade requests"
+          value={String(summary.upgradeRequests)}
+          icon={ArrowUp}
+        />
+        <StatCard
+          label="Refresh due"
+          value={String(summary.refreshDue)}
+          tone={summary.refreshDue > 0 ? "warning" : "neutral"}
+          icon={RefreshCw}
+        />
+      </StatGrid>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Tier model</CardTitle>
-          <CardDescription>
-            Verification requirements and monthly transaction ceilings per tier.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="grid gap-3 md:grid-cols-3">
+      <SectionCard
+        title="Tier model"
+        icon={UserCheck}
+        description="Verification requirements and monthly transaction ceilings per tier."
+      >
+        <div className="grid gap-3 md:grid-cols-3">
           {KYC_TIER_SPECS.map((spec) => (
             <div key={spec.tier} className="rounded-lg border p-3">
               <div className="flex items-center justify-between">
@@ -74,64 +111,65 @@ export default function KycPage() {
               </ul>
             </div>
           ))}
-        </CardContent>
-      </Card>
+        </div>
+      </SectionCard>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Onboarding review queue</CardTitle>
-          <CardDescription>
-            New submissions awaiting a decision across Tier 0 to Tier 2.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b text-left text-xs uppercase tracking-wide text-muted-foreground">
-                <th className="py-2 pr-3 font-medium">Client</th>
-                <th className="py-2 pr-3 font-medium">Tier</th>
-                <th className="py-2 pr-3 font-medium">Status</th>
-                <th className="py-2 pr-3 font-medium">Note</th>
-                <th className="py-2 pr-3 font-medium">Submitted</th>
-                <th className="py-2 pl-3 text-right font-medium">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {onboarding.map((item) => (
-                <tr key={item.id} className="border-b align-top last:border-0">
-                  <td className="py-3 pr-3 whitespace-nowrap font-medium">{item.clientName}</td>
-                  <td className="py-3 pr-3">
-                    <TierFlow item={item} />
-                  </td>
-                  <td className="py-3 pr-3">
-                    <KycStatusBadge status={item.status} />
-                  </td>
-                  <td className="max-w-md py-3 pr-3 text-muted-foreground">{item.note}</td>
-                  <td className="py-3 pr-3 whitespace-nowrap text-muted-foreground">
-                    {formatDateZM(item.submittedAt)}
-                  </td>
-                  <td className="py-3 pl-3 text-right">
-                    <Button variant="outline" size="xs">
-                      Approve
-                    </Button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <p className="pt-3 text-xs text-muted-foreground">
-            Approving a tier upgrade routes to approvals for a maker-checker decision.
-          </p>
-        </CardContent>
-      </Card>
+      <SectionCard
+        title="Onboarding review queue"
+        icon={Eye}
+        description="New submissions awaiting a decision across Tier 0 to Tier 2."
+        contentClassName="pt-0"
+      >
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Client</TableHead>
+              <TableHead>Tier</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Note</TableHead>
+              <TableHead>Submitted</TableHead>
+              <TableHead className="text-right">Action</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {onboarding.map((item) => (
+              <TableRow key={item.id} className="align-top">
+                <TableCell className="whitespace-nowrap font-medium">
+                  {item.clientName}
+                </TableCell>
+                <TableCell>
+                  <TierFlow item={item} />
+                </TableCell>
+                <TableCell>
+                  <KycStatusBadge status={item.status} />
+                </TableCell>
+                <TableCell className="max-w-md text-muted-foreground">
+                  {item.note}
+                </TableCell>
+                <TableCell className="whitespace-nowrap text-muted-foreground">
+                  {formatDateZM(item.submittedAt)}
+                </TableCell>
+                <TableCell className="text-right">
+                  <Button variant="outline" size="xs">
+                    Approve
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+        <p className="pt-3 text-xs text-muted-foreground">
+          Approving a tier upgrade routes to approvals for a maker-checker decision.
+        </p>
+      </SectionCard>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Tier upgrade requests</CardTitle>
-            <CardDescription>Clients asking to move up a tier.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
+      <div className="grid gap-4 lg:grid-cols-2">
+        <SectionCard
+          title="Tier upgrade requests"
+          icon={ArrowUp}
+          description="Clients asking to move up a tier."
+        >
+          <div className="space-y-3">
             {upgrades.map((item) => (
               <div key={item.id} className="rounded-lg border p-3">
                 <div className="flex items-center justify-between gap-2">
@@ -144,17 +182,15 @@ export default function KycPage() {
                 <p className="pt-2 text-sm text-muted-foreground">{item.note}</p>
               </div>
             ))}
-          </CardContent>
-        </Card>
+          </div>
+        </SectionCard>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Periodic refresh due</CardTitle>
-            <CardDescription>
-              Existing clients whose documents or risk profile need a refresh.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
+        <SectionCard
+          title="Periodic refresh due"
+          icon={RefreshCw}
+          description="Existing clients whose documents or risk profile need a refresh."
+        >
+          <div className="space-y-3">
             {refreshDue.map((item) => (
               <div key={item.id} className="rounded-lg border p-3">
                 <div className="flex items-center justify-between gap-2">
@@ -167,9 +203,9 @@ export default function KycPage() {
                 <p className="pt-2 text-sm text-muted-foreground">{item.note}</p>
               </div>
             ))}
-          </CardContent>
-        </Card>
+          </div>
+        </SectionCard>
       </div>
-    </div>
+    </OpsPage>
   );
 }
