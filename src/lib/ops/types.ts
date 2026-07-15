@@ -27,7 +27,7 @@ export type IsoDate = string;
 // Trades and settlement
 // ---------------------------------------------------------------------------
 
-export type AssetClass = "EQUITY" | "TBILL" | "BOND";
+export type AssetClass = "EQUITY" | "BOND";
 
 export type Side = "BUY" | "SELL";
 
@@ -203,7 +203,7 @@ export type FxRate = {
 // Corporate actions
 // ---------------------------------------------------------------------------
 
-export type CorporateActionType = "DIVIDEND" | "COUPON" | "MATURITY" | "AUTO_ROLL";
+export type CorporateActionType = "DIVIDEND" | "COUPON" | "MATURITY";
 
 export type CorporateActionStatus = "SCHEDULED" | "PROCESSED" | "FAILED";
 
@@ -220,7 +220,7 @@ export type CorporateAction = {
   /** Total cash impact across all holders, in ngwee. */
   totalNgwee: Ngwee;
   status: CorporateActionStatus;
-  /** For AUTO_ROLL, the new instrument the proceeds are rolled into. */
+  /** For MATURITY, the new instrument proceeds may roll into, if any. */
   rolledIntoSymbol: string | null;
 };
 
@@ -384,7 +384,6 @@ export type ProposalKind =
   | "SETTLE_FAIL"
   | "RELEASE_BREAK"
   | "FILE_STR"
-  | "AUTO_ROLL"
   | "TIER_UPGRADE"
   | "REMIT_WHT"
   | "FUND_FLOAT"

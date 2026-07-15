@@ -60,7 +60,7 @@ export default function RiskPage() {
         <StatCard
           label="Book exposure"
           value={formatZMW(summary.totalBookNgwee)}
-          hint="Equities and T-bills"
+          hint="Equity book"
           icon={Gauge}
         />
         <StatCard

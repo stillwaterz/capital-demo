@@ -1,10 +1,10 @@
 /**
  * Trade blotter and lifecycle engine.
  *
- * A deterministic seed blotter of equity and government-securities trades plus
- * a pure lifecycle function that derives each trade's state from the current
- * business date. Advancing the clock moves trades NEW -> EXECUTED -> CONFIRMED
- * -> CLEARING -> SETTLED, or to FAILED for the seeded fails.
+ * A deterministic seed blotter of equity (and bond) trades plus a pure lifecycle
+ * function that derives each trade's state from the current business date.
+ * Advancing the clock moves trades NEW -> EXECUTED -> CONFIRMED -> CLEARING ->
+ * SETTLED, or to FAILED for the seeded fails.
  *
  * Everything here is a pure function of (seed, currentDate) so the whole console
  * recomputes when the business clock advances. Money is integer ngwee.
@@ -26,7 +26,7 @@ const TENANT_ID = "capital-demo";
 /** Commission schedule, expressed in basis points of gross consideration. */
 export const EQUITY_BROKERAGE_BPS = 150; // 1.50% commission (BUILD_SPEC section 5)
 export const EQUITY_LEVY_BPS = 20; // 0.20% combined LuSE and SEC levy
-export const GOVT_BROKERAGE_BPS = 25; // 0.25% on T-bills and bonds
+export const GOVT_BROKERAGE_BPS = 25; // 0.25% on government bonds
 /** Flat CSD settlement fee per equity trade, in ngwee (ZMW 5.00). */
 export const CSD_FEE_NGWEE: Ngwee = 500;
 /** Withholding tax rate on dividend and coupon income, in basis points. */
@@ -152,21 +152,6 @@ const TRADE_SEEDS: readonly TradeSeed[] = [
     track: "FAST",
     failMode: "SHORT_CASH",
   },
-  {
-    id: "T-104",
-    clientId: "C003",
-    clientName: "Naomi K.",
-    symbol: "GRZ-TB-91",
-    assetClass: "TBILL",
-    side: "BUY",
-    quantity: 1_000,
-    priceNgwee: 9_750,
-    counterparty: "Bank of Zambia",
-    clientRef: "ORD-24884",
-    tradeDate: "2026-05-28",
-    track: "FAST",
-    failMode: null,
-  },
   // Batch dated 2026-05-29 (today), settles 2026-06-01 (after one advance).
   {
     id: "T-105",
@@ -229,21 +214,6 @@ const TRADE_SEEDS: readonly TradeSeed[] = [
     failMode: "UNCONFIRMED_POSITION",
   },
   {
-    id: "T-109",
-    clientId: "C003",
-    clientName: "Naomi K.",
-    symbol: "GRZ-TB-364",
-    assetClass: "TBILL",
-    side: "BUY",
-    quantity: 800,
-    priceNgwee: 8_700,
-    counterparty: "Bank of Zambia",
-    clientRef: "ORD-24895",
-    tradeDate: "2026-05-29",
-    track: "FAST",
-    failMode: null,
-  },
-  {
     id: "T-110",
     clientId: "C001",
     clientName: "Chanda M.",
@@ -271,21 +241,6 @@ const TRADE_SEEDS: readonly TradeSeed[] = [
     clientRef: "ORD-24897",
     tradeDate: "2026-05-29",
     track: "SLOW",
-    failMode: null,
-  },
-  {
-    id: "T-112",
-    clientId: "C002",
-    clientName: "Mutale B.",
-    symbol: "GRZ-TB-273",
-    assetClass: "TBILL",
-    side: "SELL",
-    quantity: 500,
-    priceNgwee: 9_100,
-    counterparty: "Bank of Zambia",
-    clientRef: "ORD-24898",
-    tradeDate: "2026-05-29",
-    track: "FAST",
     failMode: null,
   },
   // Future-dated order, starts NEW and settles after two advances.

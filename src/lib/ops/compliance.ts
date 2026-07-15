@@ -117,7 +117,7 @@ export const COMPLIANCE_ALERTS: readonly ComplianceAlert[] = [
     clientId: "cust-mwansa",
     clientName: "Kelvin Mwansa",
     description:
-      "Burst of nine small top-ups ahead of a T-bill auction. Reviewed and cleared as ordinary pre-auction funding behaviour.",
+      "Burst of nine small top-ups ahead of a buy order. Reviewed and cleared as ordinary pre-trade funding behaviour.",
     amountNgwee: 1_750_000,
     status: "CLEARED",
     raisedAt: "2026-05-24T08:12:00.000Z",

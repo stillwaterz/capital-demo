@@ -82,10 +82,8 @@ Deployed on Vercel from `main`. Live demo: https://capital-demo-five.vercel.app/
       audited server-side, lost on refresh of the store. Needs a real store.
 
 ### Product / cleanup
-- [ ] T-bills are inconsistent. Commit `204a75b` "Remove T-bills: equities-only
-      demo", but the T-bills route, store, mock data and the "Bills" nav link
-      are back in the tree (re-added in `c3eb08d`). Decide: equities-only, or
-      T-bills stay. Then make the code match.
+- [x] T-bills removed. Equities-only consumer demo: route, store, mock data,
+      Bills nav link, ops T-bill trades, auto-roll and related copy cleared.
 - [ ] The ops AI copilot calls Anthropic directly with no guardrails or rate
       limiting. Fine for demo, not for anything real.
 

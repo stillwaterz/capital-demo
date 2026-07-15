@@ -4,7 +4,7 @@ The product spec. This is the source of truth for what we are building. Read alo
 
 ## Mission
 
-A clean, AI-native consumer brokerage for Zambian retail and diaspora investors. Built on Pangaea Securities's licence. LuSE equities and GRZ government securities in one app. AI as the primary surface. All payment rails native.
+A clean, AI-native consumer brokerage for Zambian retail and diaspora investors. Built on Pangaea Securities's licence. LuSE equities in one app. AI as the primary surface. All payment rails native.
 
 ## Product surfaces (v1)
 
@@ -25,7 +25,7 @@ A clean, AI-native consumer brokerage for Zambian retail and diaspora investors.
 Three tiers:
 
 - **Tier 0 (Explorer)**: phone OTP. Read-only access to prices, research, watchlists. No wallet.
-- **Tier 1 (Light Trader, up to ZMW 10,000 per month)**: NRC plus selfie liveness, mobile money KYC reuse with consent. Auto-approval target under 3 minutes. Trades LuSE equities and GRZ T-bills. Mobile money funding.
+- **Tier 1 (Light Trader, up to ZMW 10,000 per month)**: NRC plus selfie liveness, mobile money KYC reuse with consent. Auto-approval target under 3 minutes. Trades LuSE equities. Mobile money funding.
 - **Tier 2 (Full Investor, up to ZMW 500,000 per month)**: Tier 1 plus ZRA TPIN, proof of address, conversational source of funds and risk profile. Bank funding plus mobile money. Full instrument set except institutional and structured products.
 
 The mobile money KYC reuse is the differentiator. Pull verified identity from Airtel and MTN with explicit user consent.
@@ -46,14 +46,9 @@ The mobile money KYC reuse is the differentiator. Pull verified identity from Ai
 - Dividend handling (capture, display, reinvestment toggle)
 - Basic price chart (Recharts, in-house, no third-party terminal in v1)
 
-### 4. Government securities (T-bills and bonds)
+### 4. Government bonds (parked for later)
 
-- T-bills (91, 182, 273, 364 day) primary auction routed via Pangaea
-- GRZ bonds (2 to 15 year) primary auction routed via Pangaea
-- Secondary market on Pangaea principal book and LuSE Debt Market
-- **Auto-roll on maturity** (the killer retention feature)
-- Yield laddering view
-- Goal-matched maturity selection
+Short-term government paper is out of scope. Bond primary auctions and secondary market may return in a later release. The ops console may still show bond coupon events for demo narrative.
 
 ### 5. AI as the primary surface
 
@@ -67,7 +62,7 @@ AI advises and explains. AI does not auto-trade in v1. The action-capable agent 
 
 ### 6. WHT display on every transaction
 
-WHT (15 percent on T-bill interest, dividend WHT) is deducted at source by BoZ and Pangaea. The platform displays accurate net figures on every transaction. Full ZRA-ready year-end statement is v2.
+WHT (dividend WHT) is deducted at source by Pangaea. The platform displays accurate net figures on every transaction. Full ZRA-ready year-end statement is v2.
 
 ## v1 explicitly parked
 

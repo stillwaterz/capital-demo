@@ -1,11 +1,9 @@
 /**
  * Corporate actions engine.
  *
- * Dividend runs, T-bill coupon and maturity events, and auto-roll on maturity
- * that fires a fresh bid when the business clock reaches the pay date. Each
- * action carries its cash impact, withholding tax and net wallet credit so the
- * ledger and the fees register can post from a single source. Money is integer
- * ngwee.
+ * Dividend runs and bond coupon events. Each action carries its cash impact,
+ * withholding tax and net wallet credit so the ledger and the fees register can
+ * post from a single source. Money is integer ngwee.
  */
 
 import type {
@@ -32,7 +30,7 @@ type CorporateActionSeed = {
   perUnitNgwee: Ngwee;
   exDate: IsoDate;
   payDate: IsoDate;
-  /** For AUTO_ROLL and MATURITY, the fresh instrument proceeds roll into. */
+  /** For MATURITY, the fresh instrument proceeds roll into, if any. */
   rolledIntoSymbol: string | null;
 };
 
@@ -40,8 +38,8 @@ type CorporateActionSeed = {
  * Deterministic corporate-action calendar anchored on the demo clock.
  *
  * The 2026-05-29 dividend is already processed at start. The 2026-06-01 events
- * (dividend, coupon, T-bill maturity and its auto-roll) all process on the
- * first "Advance to T+1", showing wallet credits and a fresh reinvestment bid.
+ * (dividend and coupon) process on the first "Advance to T+1", showing wallet
+ * credits.
  */
 const CA_SEEDS: readonly CorporateActionSeed[] = [
   {
@@ -96,32 +94,6 @@ const CA_SEEDS: readonly CorporateActionSeed[] = [
     payDate: "2026-06-01",
     rolledIntoSymbol: null,
   },
-  {
-    id: "CA-305",
-    type: "MATURITY",
-    symbol: "GRZ-TB-91",
-    assetClass: "TBILL",
-    clientId: "C003",
-    clientName: "Naomi K.",
-    unitsHeld: 1_000,
-    perUnitNgwee: 10_000,
-    exDate: "2026-06-01",
-    payDate: "2026-06-01",
-    rolledIntoSymbol: "GRZ-TB-91 Aug-26",
-  },
-  {
-    id: "CA-306",
-    type: "AUTO_ROLL",
-    symbol: "GRZ-TB-91",
-    assetClass: "TBILL",
-    clientId: "C003",
-    clientName: "Naomi K.",
-    unitsHeld: 1_000,
-    perUnitNgwee: 9_750,
-    exDate: "2026-06-01",
-    payDate: "2026-06-01",
-    rolledIntoSymbol: "GRZ-TB-91 Aug-26",
-  },
 ];
 
 /** Withholding tax applies to income events (dividends and coupons) only. */
@@ -162,8 +134,6 @@ function buildView(
   const grossNgwee = seed.unitsHeld * seed.perUnitNgwee;
   const whtNgwee = whtApplies(seed.type) ? ngweeBps(grossNgwee, WHT_BPS) : 0;
   const netNgwee = grossNgwee - whtNgwee;
-  // Auto-roll reinvests rather than paying the client; everything else is cash.
-  const isCashToClient = seed.type !== "AUTO_ROLL";
   return {
     id: seed.id,
     tenantId: TENANT_ID,
@@ -182,7 +152,7 @@ function buildView(
     grossNgwee,
     whtNgwee,
     netNgwee,
-    isCashToClient,
+    isCashToClient: true,
   };
 }
 
@@ -211,11 +181,6 @@ export function listScheduledActions(
   return listCorporateActions(currentDate).filter(
     (a) => a.status === "SCHEDULED"
   );
-}
-
-/** Auto-roll reinvestment bids, including ones still scheduled. */
-export function listAutoRolls(currentDate: IsoDate): CorporateActionView[] {
-  return listCorporateActions(currentDate).filter((a) => a.type === "AUTO_ROLL");
 }
 
 /** Total withholding tax captured from processed actions, for the WHT register. */

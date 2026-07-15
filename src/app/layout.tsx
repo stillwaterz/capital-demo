@@ -17,10 +17,10 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "MarketLink - Invest in Zambia",
   description:
-    "AI-powered access to LuSE equities and government securities.",
+    "AI-powered access to LuSE equities.",
   openGraph: {
     title: "MarketLink - Invest in Zambia",
-    description: "AI-powered access to LuSE equities and government securities.",
+    description: "AI-powered access to LuSE equities.",
     siteName: "MarketLink",
     images: [{ url: "/og.svg", width: 1200, height: 630 }],
   },

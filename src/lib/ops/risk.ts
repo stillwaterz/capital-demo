@@ -2,9 +2,9 @@
  * Risk engine: position and concentration limits, an exposure dashboard, and a
  * trading kill-switch state for the operations console.
  *
- * Exposure is derived deterministically from the demo portfolio plus a seeded
- * GRZ T-bill book. All money is integer ngwee. Concentration is expressed in
- * basis points (1 percent = 100 bps).
+ * Exposure is derived deterministically from the demo equity portfolio. All
+ * money is integer ngwee. Concentration is expressed in basis points
+ * (1 percent = 100 bps).
  */
 
 import type {
@@ -21,9 +21,6 @@ const TENANT_ID = "tenant-capital";
 
 const BPS_PER_WHOLE = 10_000;
 
-/** Seeded GRZ T-bill exposure that sits alongside the equity book, in ngwee. */
-const TBILL_EXPOSURE_NGWEE: Ngwee = 20_000_000; // ZMW 200,000 in a 273-day bill
-
 function buildExposureRows(): ExposureRow[] {
   const equityRows = DEMO_PORTFOLIO.equities.map((holding) => ({
     symbol: holding.instrument.symbol,
@@ -32,14 +29,7 @@ function buildExposureRows(): ExposureRow[] {
     shareBps: 0,
   }));
 
-  const tbillRow = {
-    symbol: "GRZ-TB-273",
-    assetClass: "TBILL" as AssetClass,
-    exposureNgwee: TBILL_EXPOSURE_NGWEE,
-    shareBps: 0,
-  };
-
-  const rows = [...equityRows, tbillRow];
+  const rows = [...equityRows];
   const total = rows.reduce((sum, row) => sum + row.exposureNgwee, 0);
 
   return rows
@@ -131,7 +121,7 @@ export function getLimitsByType(type: RiskLimitType): RiskLimit[] {
 
 export type KillSwitchMode = "LIVE" | "HALTED";
 
-export type KillSwitchScope = "ALL_TRADING" | "EQUITIES" | "TBILLS";
+export type KillSwitchScope = "ALL_TRADING" | "EQUITIES";
 
 export type KillSwitchState = {
   /** True when trading is halted by the switch. */

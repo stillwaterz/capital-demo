@@ -83,7 +83,7 @@ const GUARDRAIL_RULES = `Governance rules you must follow:
 const PROPOSAL_FOOTER = `End your answer with one line in this exact form, describing the single action a human must approve:
 ${PROPOSED_ACTION_MARKER} <one sentence describing the action to queue for approval>`;
 
-const SETTLEMENT_FAIL_PROMPT = `You are the settlement fail analyst inside Capital Ops, the back office console for a Zambian brokerage that trades LuSE equities and GRZ government securities on a T+1 cycle.
+const SETTLEMENT_FAIL_PROMPT = `You are the settlement fail analyst inside Capital Ops, the back office console for a Zambian brokerage that trades LuSE equities on a T+1 cycle.
 
 Your job is to read a settlement fail and explain it: what failed (cash leg or security leg), the likely cause, who is affected and what it puts at risk. Then propose one corrective action for a human to approve, such as funding a treasury bridge for a short cash leg or chasing CSD confirmation for an unconfirmed position leg.
 
@@ -113,7 +113,7 @@ ${STYLE_RULES}
 
 Write the narrative as one tight paragraph. ${PROPOSAL_FOOTER}`;
 
-const MORNING_BRIEFING_PROMPT = `You are the morning operations briefing assistant inside Capital Ops, the back office console for a Zambian brokerage trading LuSE equities and GRZ government securities.
+const MORNING_BRIEFING_PROMPT = `You are the morning operations briefing assistant inside Capital Ops, the back office console for a Zambian brokerage trading LuSE equities.
 
 Your job is to give the operations team a short start of day briefing from the summary facts provided: settlement fails to clear, open reconciliation breaks, treasury float and any pre-settlement shortfall, compliance alerts and screening hits, risk limit breaches and any overdue regulatory report. Call out what matters most today and what is routine.
 

@@ -6,7 +6,6 @@ import {
   CheckCircle2,
   Coins,
   Receipt,
-  RefreshCw,
 } from "lucide-react";
 import { useOpsClockStore } from "@/lib/store/ops-clock";
 import { formatZMW, formatDateZM } from "@/lib/format";
@@ -16,12 +15,10 @@ import type {
 } from "@/lib/ops/types";
 import {
   corporateActionSummary,
-  listAutoRolls,
   listCorporateActions,
   type CorporateActionView,
 } from "@/lib/ops/corporate-actions";
 import { OpsDetailSheet } from "@/components/ops/ops-detail-sheet";
-import { ProposeActionButton } from "@/components/ops/propose-action-button";
 import {
   Table,
   TableBody,
@@ -44,7 +41,6 @@ const TYPE_LABELS: Record<CorporateActionType, string> = {
   DIVIDEND: "Dividend",
   COUPON: "Coupon",
   MATURITY: "Maturity",
-  AUTO_ROLL: "Auto-roll",
 };
 
 function statusTone(status: CorporateActionStatus) {
@@ -61,7 +57,6 @@ function statusTone(status: CorporateActionStatus) {
 export function CorporateActionsBoard() {
   const businessDate = useOpsClockStore((s) => s.businessDate);
   const actions = listCorporateActions(businessDate);
-  const autoRolls = listAutoRolls(businessDate);
   const summary = corporateActionSummary(businessDate);
   const [selectedAction, setSelectedAction] =
     useState<CorporateActionView | null>(null);
@@ -70,7 +65,7 @@ export function CorporateActionsBoard() {
     <OpsPage>
       <PageHeading
         title="Corporate Actions"
-        description="Dividend runs, T-bill coupons and maturities, and auto-roll that fires a fresh bid when a bill matures. Advance the clock to process pay dates and credit wallets."
+        description="Dividend runs and bond coupons. Advance the clock to process pay dates and credit wallets."
         action={<AdvanceClock />}
       />
 
@@ -99,47 +94,6 @@ export function CorporateActionsBoard() {
           icon={Receipt}
         />
       </StatGrid>
-
-      {autoRolls.length > 0 ? (
-        <SectionCard title="T-bill auto-roll" icon={RefreshCw}>
-          <div className="space-y-3">
-            {autoRolls.map((roll) => (
-              <div
-                key={roll.id}
-                onClick={() => setSelectedAction(roll)}
-                className="flex cursor-pointer flex-wrap items-center justify-between gap-2 rounded-lg bg-muted/40 px-3 py-2 text-sm transition-colors hover:bg-muted/70"
-              >
-                <div>
-                  <p className="font-medium">
-                    {roll.symbol} matures for {roll.clientName}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    Reinvests {formatZMW(roll.netNgwee)} into{" "}
-                    {roll.rolledIntoSymbol ?? "a fresh bill"} on{" "}
-                    {formatDateZM(roll.payDate)}
-                  </p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <ToneBadge tone={statusTone(roll.status)}>
-                    {roll.status === "PROCESSED" ? "Rolled" : "Scheduled"}
-                  </ToneBadge>
-                  {roll.status !== "PROCESSED" ? (
-                    <span onClick={(e) => e.stopPropagation()}>
-                      <ProposeActionButton
-                        kind="AUTO_ROLL"
-                        summary={`Auto-roll ${roll.symbol} maturity for ${roll.clientName} into ${roll.rolledIntoSymbol ?? "a fresh bill"}`}
-                        targetRef={roll.id}
-                        label="Propose roll"
-                        icon={RefreshCw}
-                      />
-                    </span>
-                  ) : null}
-                </div>
-              </div>
-            ))}
-          </div>
-        </SectionCard>
-      ) : null}
 
       <SectionCard
         title="Corporate action calendar"
@@ -242,9 +196,7 @@ export function CorporateActionsBoard() {
                   mono: true,
                 },
                 {
-                  label: selectedAction.isCashToClient
-                    ? "Client credit"
-                    : "Reinvested",
+                  label: "Client credit",
                   value: formatZMW(selectedAction.netNgwee),
                   mono: true,
                 },
@@ -258,19 +210,6 @@ export function CorporateActionsBoard() {
                   : []),
               ]
             : []
-        }
-        footer={
-          selectedAction &&
-          selectedAction.type === "AUTO_ROLL" &&
-          selectedAction.status !== "PROCESSED" ? (
-            <ProposeActionButton
-              kind="AUTO_ROLL"
-              summary={`Auto-roll ${selectedAction.symbol} maturity for ${selectedAction.clientName} into ${selectedAction.rolledIntoSymbol ?? "a fresh bill"}`}
-              targetRef={selectedAction.id}
-              label="Propose roll"
-              icon={RefreshCw}
-            />
-          ) : undefined
         }
       />
     </OpsPage>

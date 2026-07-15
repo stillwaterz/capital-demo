@@ -64,8 +64,8 @@ export const COMMISSION_SCHEDULE: readonly CommissionScheduleRow[] = [
     basis: "FLAT",
   },
   {
-    label: "Government securities brokerage",
-    assetClass: "TBILL",
+    label: "Government bond brokerage",
+    assetClass: "BOND",
     feeType: "BROKERAGE",
     rate: `${(GOVT_BROKERAGE_BPS / 100).toFixed(2)}% of consideration`,
     basis: "BPS",

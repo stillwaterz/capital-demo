@@ -8,7 +8,7 @@ Also read **BUILD_SPEC.md** (product requirements and tech stack) and **TASKS.md
 
 ## Project mission
 
-A Pranary-built, Pangaea-licensed, AI-native consumer brokerage for Zambian retail and diaspora investors. Trades LuSE equities and GRZ government securities (T-bills and bonds). AI is the primary surface (research, news intelligence, conversational explainer). All payment rails native. Multi-tenant from day one.
+A Pranary-built, Pangaea-licensed, AI-native consumer brokerage for Zambian retail and diaspora investors. Trades LuSE equities. AI is the primary surface (research, news intelligence, conversational explainer). All payment rails native. Multi-tenant from day one.
 
 Working brand placeholder: **Capital** (final name pending).
 
@@ -49,7 +49,7 @@ packages/
   core/         Domain types, Money, instruments, orders, portfolio
   ai/           Anthropic clients, agents, prompts, guardrails
   trading/      Order routing, execution adapters (Pangaea, mock, future)
-  securities/   Equity, bond, T-bill, CIS instrument types
+  securities/   Equity, bond, CIS instrument types
   kyc/          Tiered KYC engine, identity, sanctions, AML hooks
   compliance/   Audit log, transaction monitoring, regulatory reports
   payments/     Mobile money, EFT, RTGS, FX, float

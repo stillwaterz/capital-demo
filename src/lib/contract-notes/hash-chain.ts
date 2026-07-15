@@ -37,7 +37,7 @@ const HASH_ENCODING = "hex" as const;
  * shape is fixed and every field is load-bearing for the statutory record.
  */
 export type ContractNotePayload = {
-  /** LuSE ticker or GRZ security symbol the note settles. */
+  /** LuSE ticker or other security symbol the note settles. */
   symbol: string;
   /** Number of units bought or sold. */
   quantity: number;

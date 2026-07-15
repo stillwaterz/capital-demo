@@ -9,10 +9,10 @@ import { SiteFooter } from "@/components/landing/site-footer";
 export const metadata: Metadata = {
   title: "MarketLink - AI-powered investing for Zambia",
   description:
-    "Buy LuSE shares and government securities. AI research, daily briefings and news intelligence. Built in Zambia, powered by Pangaea Securities.",
+    "Buy LuSE shares. AI research, daily briefings and news intelligence. Built in Zambia, powered by Pangaea Securities.",
   openGraph: {
     title: "MarketLink - AI-powered investing for Zambia",
-    description: "Buy LuSE shares and government securities. AI research, daily briefings and news intelligence. Built in Zambia, powered by Pangaea Securities.",
+    description: "Buy LuSE shares. AI research, daily briefings and news intelligence. Built in Zambia, powered by Pangaea Securities.",
     siteName: "MarketLink",
     images: [{ url: "/og.svg", width: 1200, height: 630 }],
   },

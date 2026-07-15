@@ -15,7 +15,6 @@ This guide walks through the MarketLink demo end to end: customer app, back offi
 3. After confirmation, switch to **Operations** using the header toggle.
 4. Open **Settlement** and find your trade with an **App** badge on the lifecycle board.
 5. Visit **Profile** and use **Fund wallet** to simulate an Airtel Money deposit.
-6. Open **Bills** and toggle **Auto-roll on maturity** on the 91 day holding.
 
 ## 2. Back office spine
 
@@ -25,7 +24,7 @@ This guide walks through the MarketLink demo end to end: customer app, back offi
 4. Open **Ledger** for double-entry journal and trial balance.
 5. Open **Reconciliation** for cash, position and float breaks.
 6. Open **Treasury** for float across Airtel, MTN, FNB, Zanaco, Stanbic and settlement.
-7. Open **Corporate actions** for dividends, coupons, maturities and auto-roll events.
+7. Open **Corporate actions** for dividends and bond coupons.
 8. Open **Fees and tax** for brokerage runs and 15% WHT remittance register.
 
 ## 3. Supervision

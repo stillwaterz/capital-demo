@@ -50,7 +50,7 @@ export const KYC_TIER_SPECS: readonly KycTierSpec[] = [
     name: "Light Trader",
     monthlyLimitNgwee: 1_000_000, // ZMW 10,000
     requirements: ["NRC", "Selfie liveness", "Mobile money KYC reuse with consent"],
-    capability: "Trade LuSE equities and GRZ T-bills. Mobile money funding.",
+    capability: "Trade LuSE equities. Mobile money funding.",
   },
   {
     tier: "TIER_2",

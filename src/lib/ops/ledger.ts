@@ -107,13 +107,7 @@ function corporateActionEntries(currentDate: IsoDate): JournalEntry[] {
   return listProcessedActions(currentDate).map((action) => {
     const postedAt: IsoTimestamp = `${action.payDate}T07:30:00.000Z`;
     let lines: JournalLine[];
-    if (action.type === "AUTO_ROLL") {
-      // Maturity proceeds reinvested into a fresh bill: cash recycles via settlement.
-      lines = [
-        debit("SETTLEMENT", action.netNgwee),
-        credit("CLIENT_CASH", action.netNgwee, action.clientId),
-      ];
-    } else if (action.whtNgwee > 0) {
+    if (action.whtNgwee > 0) {
       lines = [
         debit("SETTLEMENT", action.grossNgwee),
         credit("CLIENT_CASH", action.netNgwee, action.clientId),
@@ -125,10 +119,7 @@ function corporateActionEntries(currentDate: IsoDate): JournalEntry[] {
         credit("CLIENT_CASH", action.netNgwee, action.clientId),
       ];
     }
-    const label =
-      action.type === "AUTO_ROLL"
-        ? `${action.symbol} maturity auto-rolled into ${action.rolledIntoSymbol ?? "new bill"}`
-        : `${action.symbol} ${action.type.toLowerCase()} for ${action.clientName}`;
+    const label = `${action.symbol} ${action.type.toLowerCase()} for ${action.clientName}`;
     return {
       id: `JE-${action.id}`,
       tenantId: TENANT_ID,

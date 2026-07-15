@@ -12,7 +12,6 @@ const TENANT_ID = "capital-demo";
 const DEMO_CLIENT_ID = "C001";
 
 function assetClassForSymbol(symbol: string): AssetClass {
-  if (symbol.startsWith("GRZ-TB")) return "TBILL";
   if (symbol.startsWith("GRZ-B")) return "BOND";
   return "EQUITY";
 }

@@ -19,11 +19,6 @@ export function formatPercent(value: number, decimals = 2): string {
   return `${sign}${value.toFixed(decimals)}%`;
 }
 
-/** Yield without sign → "13.50%" */
-export function formatYield(value: number): string {
-  return `${value.toFixed(2)}%`;
-}
-
 /** Date → "6 May 2026" */
 export function formatDateZM(date: Date | string): string {
   return new Date(date).toLocaleDateString("en-ZM", {

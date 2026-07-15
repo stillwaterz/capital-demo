@@ -126,10 +126,10 @@ describe("resolveOrder limit vs market", () => {
 });
 
 describe("resolveOrder asset classes", () => {
-  it("uses government-security fees for a T-bill", () => {
+  it("uses government-security fees for a bond", () => {
     const result = resolveOrder({
       side: "BUY",
-      assetClass: "TBILL",
+      assetClass: "BOND",
       mode: "quantity",
       priceType: "limit",
       lastPriceNgwee: 9_750,
@@ -137,7 +137,7 @@ describe("resolveOrder asset classes", () => {
       quantity: 100,
       boardLot: 100,
     });
-    const fees = computeTradeFees(975_000, "TBILL");
+    const fees = computeTradeFees(975_000, "BOND");
     expect(result.fees).toEqual(fees);
     expect(result.fees.levyNgwee).toBe(0);
     expect(result.fees.csdNgwee).toBe(0);

@@ -54,7 +54,6 @@ export const PROPOSAL_KIND_LABELS: Record<ProposalKind, string> = {
   SETTLE_FAIL: "Settle a fail",
   RELEASE_BREAK: "Release a reconciliation break",
   FILE_STR: "File a suspicious transaction report",
-  AUTO_ROLL: "Auto-roll a maturing bill",
   TIER_UPGRADE: "Approve a KYC tier upgrade",
   REMIT_WHT: "Remit withholding tax",
   FUND_FLOAT: "Fund a treasury float top-up",
@@ -66,7 +65,6 @@ export const PROPOSAL_KIND_PERMISSIONS: Record<ProposalKind, StaffRole[]> = {
   SETTLE_FAIL: ["OPS", "ADMIN"],
   RELEASE_BREAK: ["OPS", "ADMIN"],
   FILE_STR: ["COMPLIANCE", "ADMIN"],
-  AUTO_ROLL: ["OPS", "TREASURY", "ADMIN"],
   TIER_UPGRADE: ["COMPLIANCE", "ADMIN"],
   REMIT_WHT: ["TREASURY", "ADMIN"],
   FUND_FLOAT: ["TREASURY", "ADMIN"],
@@ -248,9 +246,6 @@ export function runGuardrail(
         } breached, so halting the affected book is justified.`
       );
     }
-
-    case "AUTO_ROLL":
-      return pass("Maturity proceeds are available to roll into the new bill at the published rate.");
 
     case "REMIT_WHT":
       return pass("Withholding tax balance is reconciled and within the remittance window.");

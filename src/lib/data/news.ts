@@ -14,7 +14,7 @@ const FINANCIAL_KEYWORDS = [
   "bank of zambia", "boz", "zra", "sec zambia", "securities and exchange commission",
   "monetary policy", "mpr", "interest rate", "inflation",
   // Instruments
-  "kwacha", "zmw", "treasury bill", "t-bill", "government bond", "dividend", "yield", "auction",
+  "kwacha", "zmw", "government bond", "dividend", "yield",
   // Commodities relevant to Zambia
   "copper", "cobalt",
   // Verified LuSE counters

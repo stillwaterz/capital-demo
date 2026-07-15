@@ -2,14 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, TrendingUp, Newspaper, Sparkles, User, Landmark } from "lucide-react";
+import { Home, TrendingUp, Newspaper, Sparkles, User } from "lucide-react";
 import { useUserStore } from "@/lib/store/user";
 import { ModeSwitcher } from "@/components/ops/mode-switcher";
 
 const TABS = [
   { href: "/home", label: "Home", icon: Home },
   { href: "/equities", label: "Stocks", icon: TrendingUp },
-  { href: "/tbills", label: "Bills", icon: Landmark },
   { href: "/news", label: "News", icon: Newspaper },
   { href: "/ask", label: "Ask", icon: Sparkles },
   { href: "/profile", label: "Profile", icon: User },

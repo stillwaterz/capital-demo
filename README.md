@@ -1,6 +1,6 @@
 # MarketLink Demo
 
-AI-powered access to LuSE equities and GRZ government securities for Zambian investors.
+AI-powered access to LuSE equities for Zambian investors.
 
 ## Stack
 
@@ -21,7 +21,6 @@ Open [http://localhost:3000](http://localhost:3000).
 ## Features
 
 - LuSE equity prices and 30-day charts
-- GRZ T-bill auction bids with auto-roll toggle
 - AI daily briefing (streams on dashboard load)
 - Market Pulse: ALSI, USD/ZMW, copper price, BoZ rate, top movers
 - Smart suggestion card with AI rationale
